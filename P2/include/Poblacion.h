@@ -10,6 +10,7 @@ class Poblacion{
 		vector<int> datos;
 		int num_datos;
 		int num_clusters;
+		vector<int> tam;
 
 	public:
 		Poblacion(int max_datos, int datos_centro, int clusters, int min, int max);
@@ -29,5 +30,12 @@ class Poblacion{
 
 		void actualizarCentroides(vector<vector<float>> centros);
 
-		float distanciaIntraCluster(vector<vector<float>> centros);
+		float distanciaIntraCluster(vector<vector<float>> centros, int cluster);
+
+		float desviacionGeneral(vector<vector<float>> datos);
+
+		void vaciarClusters(){
+			vector<int> vacio(num_datos,-1);
+			datos = datos;
+		}
 };

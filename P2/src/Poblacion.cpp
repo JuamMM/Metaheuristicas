@@ -7,6 +7,9 @@ using namespace std;
 
 Poblacion::Poblacion(int max_datos, int datos_centro, int clusters, int min, int max){
 	num_datos = max_datos;
+	vector<int> tamanio(clusters,0);
+	tam = tamanio;
+
 	for(int i=0; i <clusters; i++){
 		vector<float> centros;
 		for(int e=0; e<datos_centro;e++){
@@ -20,7 +23,12 @@ Poblacion::Poblacion(int max_datos, int datos_centro, int clusters, int min, int
 }
 
 void Poblacion::asignaDato(int dato, int cluster){
+	if(datos[dato]!=-1){
+		tam[datos[dato]]--;
+	}
 	datos[dato] = cluster;
+	tam[cluster]++;
+
 }
 
 void Poblacion::actualizarCentroides(vector<vector<float>> centros){
@@ -44,23 +52,32 @@ void Poblacion::imprimePoblacion(){
 	cout<<endl;
 }
 
-float Poblacion::distanciaIntraCluster(vector<vector<float>> centros){
+float Poblacion::distanciaIntraCluster(vector<vector<float>> centros, int cluster){
 	int indice = 0;
-	int cluster;
-	vector<float> dist(num_clusters,0.0);
+	float distancia = 0.0;
 
 	for(auto it = centros.begin(); it != centros.end(); it++){
-		cluster = datos[indice];
-		int i=0;
-		for(auto it_datos = it->begin(); it_datos != it->end(); it_datos++){
-			dist[cluster] += abs(centroides[cluster][i]-(*it_datos));
-			i++;
+		if(cluster == datos[indice]){
+			int i=0;
+			for(auto it_datos = it->begin(); it_datos != it->end(); it_datos++){
+				distancia += abs(centroides[cluster][i]-(*it_datos))*1.0;
+				i++;
+			}
 		}
 		indice++;
 	}
-	for(int i=0; i<num_clusters;i++){
-		dist[i]
+
+	distancia = distancia/tam[cluster]*1.0;
+
+	return distancia;
+}
+
+float Poblacion::desviacionGeneral(vector<vector<float>> datos){
+	float distancia = 0.0;
+
+	for(int i=0; i<num_clusters; i++){
+		distancia+=distanciaIntraCluster(datos,i);
 	}
-	dist = dist/num_datos;
-	return dist/num_clusters;
+
+	return distancia/(num_clusters*1.0);
 }

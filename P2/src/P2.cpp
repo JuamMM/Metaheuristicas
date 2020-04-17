@@ -13,6 +13,7 @@ using namespace std;
 vector<vector<float>> datos;
 map<pair<int,int>,int> restricciones;
 int datos_centro;
+float lambda = 0.0005;
 
 void leerDatos(string fich_datos){
 	ifstream fichero;
@@ -48,7 +49,7 @@ void leerRestricciones(string fichero_restricciones){
 
 
 		while(!getline(reader,dato,',').eof()){
-			if(stoi(dato) != 0 && val1>=val2){
+			if(stoi(dato) != 0 && val1>val2){
 				pos = make_pair(val1,val2);
 				restricciones.insert(pair<pair<int,int>,int>(pos,stod(dato)));
 			}
@@ -91,18 +92,25 @@ double calcularDistancia(vector<float> el1, vector<float> el2){
 	return abs(c1 - c2);
 }
 
+bool compara(float dist1, float dist2){
+	return lambda>(abs(dist1-dist2));
+}
+
 Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 	Poblacion pob(num_datos, datos_centro, num_clusters, min, max);
 	vector<int> indices;
 	bool parar = false;
+	float distancia_orig =10000;
 
 	for(int i=0;i <num_datos; i++){
 		indices.push_back(i);
 	}
 
-	random_shuffle(indices.begin(), indices.end());
 
 	while(!parar){
+
+		random_shuffle(indices.begin(), indices.end());
+
 		for(auto it_indie = indices.begin(); it_indie != indices.end(); it_indie++){
 			int dato = (*it_indie);
 
@@ -129,7 +137,14 @@ Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 			pob.asignaDato(dato,cluster_correcto);
 		}
 		pob.actualizarCentroides(datos);
-		parar = true;
+		float distancia_nueva = pob.desviacionGeneral(datos);
+		if(compara(distancia_orig,distancia_nueva)){
+			parar = true;
+		}
+		else{
+			pob.vaciarClusters();
+			distancia_orig = distancia_nueva;
+		}
 	}
 
 	return pob;
