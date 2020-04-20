@@ -1,4 +1,6 @@
 #include <vector>
+#include <list>
+#include <tuple>
 #include <string>
 #include <map>
 
@@ -30,4 +32,6 @@ class PAR{
 		void generarPoblacionesAleatorias(int num_datos);
 
 		void imprimirPoblaciones();
+
+		void algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,int>> rest);
 };

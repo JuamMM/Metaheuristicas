@@ -1,4 +1,6 @@
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "Poblacion.h"
@@ -26,9 +28,18 @@ void Poblacion::asignaDato(int dato, int cluster){
 	if(datos[dato]!=-1){
 		tam[datos[dato]]--;
 	}
-	datos[dato] = cluster;
-	tam[cluster]++;
 
+	datos[dato] = cluster;
+	if(cluster!=-1){
+		tam[cluster]++;
+	}
+}
+
+void Poblacion::asignacionAleatoria(){
+	for(int e=0;e<num_datos;e++){
+		int cluster_nuevo = (rand()%num_clusters);
+		asignaDato(e,cluster_nuevo);
+	}
 }
 
 void Poblacion::actualizarCentroides(vector<vector<float>> centros){
@@ -43,6 +54,7 @@ void Poblacion::actualizarCentroides(vector<vector<float>> centros){
 			i++;
 		}
 	}
+
 }
 
 void Poblacion::imprimePoblacion(){
@@ -63,6 +75,7 @@ float Poblacion::distanciaIntraCluster(vector<vector<float>> centros, int cluste
 				distancia += abs(centroides[cluster][i]-(*it_datos))*1.0;
 				i++;
 			}
+			distancia /=centroides[cluster].size();
 		}
 		indice++;
 	}
@@ -80,4 +93,12 @@ float Poblacion::desviacionGeneral(vector<vector<float>> datos){
 	}
 
 	return distancia/(num_clusters*1.0);
+}
+
+int Poblacion::calcularErrorGenerado(int num_datos, list<tuple<int,int,int>> rest){
+	int errores = 0;
+	for(int i=0; i< num_datos; i++){
+		errores += calcularErrorParcial(i,datos[i]);
+	}
+	return errores;
 }

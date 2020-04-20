@@ -1,6 +1,8 @@
 #include <iostream>
+#include <list>
+#include <tuple>
+#include <stdlib.h>
 #include <vector>
-#include <set>
 
 using namespace std;
 
@@ -14,7 +16,9 @@ class Poblacion{
 
 	public:
 		Poblacion(int max_datos, int datos_centro, int clusters, int min, int max);
+
 		void asignaDato(int dato, int cluster);
+
 		void imprimePoblacion();
 
 		vector<float> devuelveCentroide(int indice){
@@ -27,6 +31,10 @@ class Poblacion{
 		int tamanio(){
 			return datos.size();
 		}
+
+		int calcularErrorGenerado(list<tuple<int,int,int>> rest);
+
+		void asignacionAleatoria();
 
 		void actualizarCentroides(vector<vector<float>> centros);
 
