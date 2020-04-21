@@ -32,7 +32,9 @@ class Poblacion{
 			return datos.size();
 		}
 
-		int calcularErrorGenerado(list<tuple<int,int,int>> rest);
+		int calcularErrorGenerado(list<tuple<int,int,double>> rest);
+
+		int calcularErrorParcial(int dato, int cluster1, list<tuple<int,int,double>> restricciones);
 
 		void asignacionAleatoria();
 

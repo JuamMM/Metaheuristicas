@@ -95,10 +95,39 @@ float Poblacion::desviacionGeneral(vector<vector<float>> datos){
 	return distancia/(num_clusters*1.0);
 }
 
-int Poblacion::calcularErrorGenerado(int num_datos, list<tuple<int,int,int>> rest){
+int Poblacion::calcularErrorGenerado(list<tuple<int,int,double>> restricciones){
 	int errores = 0;
-	for(int i=0; i< num_datos; i++){
-		errores += calcularErrorParcial(i,datos[i]);
+	for(auto it_res = restricciones.begin(); it_res != restricciones.end(); it_res++){
+		int cluster2 = datos[get<1>(*it_res)];
+		int cluster1 = datos[get<0>(*it_res)];
+		if(cluster1 == -1 || cluster2 == -1){
+
+		}
+		else if(cluster1 == cluster2 && get<2>(*it_res) == -1){
+			errores++;
+		}
+		else if(cluster2 != cluster1 && get<2>(*it_res) == 1){
+			errores++;
+		}
+
+	}
+	return errores;
+}
+
+int Poblacion::calcularErrorParcial(int dato, int cluster1, list<tuple<int,int,double>> restricciones){
+	int errores = 0;
+	for(auto it_res = restricciones.begin(); it_res != restricciones.end(); it_res++){
+		if( get<0>(*it_res) == dato && dato>get<1>(*it_res)){
+			int cluster2 = devuelveCluster(get<1>(*it_res));
+			if(cluster2 != -1){
+				if(cluster1 == cluster2 && (get<2>(*it_res)) == -1){
+					errores++;
+				}
+				else if(cluster1 != cluster2 && (get<2>(*it_res)) == 1){
+					errores++;
+				}
+			}
+		}
 	}
 	return errores;
 }

@@ -33,5 +33,5 @@ class PAR{
 
 		void imprimirPoblaciones();
 
-		void algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,int>> rest);
+		void algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> rest);
 };

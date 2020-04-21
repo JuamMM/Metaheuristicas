@@ -22,16 +22,17 @@ void PAR::imprimirPoblaciones(){
 	cout<<endl;
 }
 
-void PAR::algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,int>> rest){
+void PAR::algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> rest){
 	vector<Poblacion> pob_nueva;
+	int num_datos = datos.size();
 	for(int i=0; i<num_poblaciones; i++){
 		int pob1 = (rand()%num_poblaciones);
 		int pob2 = (rand()%num_poblaciones);
 		while(pob1 == pob2){
 			pob2 = (rand()%num_poblaciones);
 		}
-		float val1 = pob1.calcularErrorGenerado(rest);
-		float val2 = pob2.calcularErrorGenerado(rest);
+		float val1 = poblaciones[pob1].calcularErrorGenerado(rest);
+		float val2 = poblaciones[pob2].calcularErrorGenerado(rest);
 
 		if(val1 < val2){
 			pob_nueva.push_back(poblaciones[pob1]);

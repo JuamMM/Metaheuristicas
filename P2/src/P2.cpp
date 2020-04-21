@@ -16,7 +16,7 @@
 using namespace std;
 
 vector<vector<float>> datos;
-list<tuple<int,int,int>>restricciones;
+list<tuple<int,int,double>>restricciones;
 int datos_centro;
 float epsilon= 0.0005;
 float lambda = 0;
@@ -55,8 +55,8 @@ void leerRestricciones(string fichero_restricciones){
 
 
 		while(!getline(reader,dato,',').eof()){
-			if(stoi(dato) != 0){
-				tuple<int,int,int> tupla = make_tuple(val1,val2,stoi(dato));
+			if(stod(dato) != 0){
+				tuple<int,int,double> tupla = make_tuple(val1,val2,stod(dato));
 				restricciones.push_back(tupla);
 			}
 			val2++;
@@ -66,24 +66,6 @@ void leerRestricciones(string fichero_restricciones){
 
 	}
 
-}
-
-int calcularErrorParcial(int dato, int cluster1, Poblacion pob){
-	int errores = 0;
-	for(auto it_res = restricciones.begin(); it_res != restricciones.end(); it_res++){
-		if( get<0>(*it_res) == dato && dato>get<1>(*it_res)){
-			int cluster2 = pob.devuelveCluster(get<1>(*it_res));
-			if(cluster2 != -1){
-				if(cluster1 == cluster2 && (get<2>(*it_res)) == -1){
-					errores++;
-				}
-				else if(cluster1 != cluster2 && (get<2>(*it_res)) == 1){
-					errores++;
-				}
-			}
-		}
-	}
-	return errores;
 }
 
 double calcularDistancia(vector<float> el1, vector<float> el2){
@@ -124,7 +106,7 @@ Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 			float distancia_minima = 100000;
 
 			for(int cluster=0; cluster < num_clusters; cluster++){
-				double infac = calcularErrorParcial(dato, cluster, pob);
+				double infac = pob.calcularErrorParcial(dato,cluster,restricciones);
 
 				if(infac < restricciones_minimas){
 					restricciones_minimas = infac;
@@ -134,7 +116,7 @@ Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 
 			for(int cluster=0; cluster<num_clusters;cluster++){
 				float distancia = calcularDistancia(datos[dato],pob.devuelveCentroide(cluster));
-				if(distancia_minima > distancia && calcularErrorParcial(dato,cluster,pob) == restricciones_minimas){
+				if(distancia_minima > distancia && pob.calcularErrorParcial(dato,cluster,restricciones) == restricciones_minimas){
 					distancia_minima = distancia;
 					cluster_correcto = cluster;
 				}
@@ -144,6 +126,7 @@ Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 		}
 		pob.actualizarCentroides(datos);
 		float distancia_nueva = pob.desviacionGeneral(datos);
+
 		if(compara(distancia_orig,distancia_nueva)){
 			parar = true;
 		}
@@ -154,14 +137,6 @@ Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 	}
 
 	return pob;
-}
-
-int calcularErrorGenerado(Poblacion pob){
-	int errores = 0;
-	for(int i=0; i< datos.size(); i++){
-		errores += calcularErrorParcial(i,pob.devuelveCluster(i),pob);
-	}
-	return errores;
 }
 
 void calculaLambda(){
@@ -207,7 +182,7 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 
 	pob.asignacionAleatoria();
 
-	error = calcularErrorGenerado(pob);
+	error = pob.calcularErrorGenerado(restricciones);
 	pob.actualizarCentroides(datos);
 	float valoracion = pob.desviacionGeneral(datos)+lambda*error;
 
@@ -220,11 +195,10 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 			int clust_orig = pob.devuelveCluster(dato);
 
 			for(int clust_nuevo=0; clust_nuevo<num_clusters && cont_evaluacion; clust_nuevo++){
-				pob.asignaDato(dato,-1);
 				int rest_nueva;
 
 				pob.asignaDato(dato,clust_nuevo);
-				rest_nueva = calcularErrorGenerado(pob);
+				rest_nueva = pob.calcularErrorGenerado(restricciones);
 
 				pob.actualizarCentroides(datos);
 
@@ -232,7 +206,7 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 
 				if(valoracion > valoracion_nueva){
 					valoracion = valoracion_nueva;
-					error = valoracion_nueva;
+					error = rest_nueva;
 					cont_evaluacion = false;
 				}
 				else{
@@ -275,7 +249,7 @@ int main(int argc, char **argv){
 		Poblacion pob = BL(numero_datos, clusters, minimo, maximo);
 		cout<<"Tiempo: "<<elapsed_time()<<endl;
 		pob.imprimePoblacion();
-		cout<<"Error: "<<calcularErrorGenerado(pob)<<endl;
+		cout<<"Error: "<<pob.calcularErrorGenerado(restricciones)<<endl;
 
 		srand(time( NULL ));
 
@@ -283,7 +257,7 @@ int main(int argc, char **argv){
 		problema.imprimirPoblaciones();
 		for(int i=0; i<poblaciones; i++){
 			cout<<"Error poblacion "<<i<<": "<<endl;
-			cout<<calcularErrorGenerado(problema.devuelvePoblacion(i));
+			cout<<problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
 			cout<<endl;
 		}
 	}
