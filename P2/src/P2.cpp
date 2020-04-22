@@ -248,7 +248,13 @@ int main(int argc, char **argv){
 
 		problema.generarPoblacionesAleatorias(numero_datos);
 		problema.imprimirPoblaciones();
-		problema.algoritmoMutacion(0);
+		for(int i=0; i<poblaciones; i++){
+			cout<<"Error "<<i<<" "<<problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones)<<endl;
+		}
+		problema.BLsuave(lambda,restricciones,datos);
 		problema.imprimirPoblaciones();
+		for(int i=0; i<poblaciones; i++){
+			cout<<"Error "<<i<<" "<<problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones)<<endl;
+		}
 	}
 }

@@ -82,3 +82,31 @@ void PAR::algoritmoMutacion(int pob){
 
 	poblaciones[pob].asignaDato(dato,valor_nuevo);
 }
+
+void PAR::BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos){
+	for(int i=0;i<num_poblaciones;i++){
+		for(int e=0;e<tam;e++){
+			int cluster_orig = poblaciones[i].devuelveCluster(e);
+			int error_orig = poblaciones[i].calcularErrorGenerado(restricciones);
+
+			float val_orig = poblaciones[i].desviacionGeneral(datos)+lambda*error_orig;
+
+			for(int cluster_nuevo = 0; cluster_nuevo<num_clusters;cluster_nuevo++){
+				poblaciones[i].asignaDato(e,cluster_nuevo);
+				poblaciones[i].actualizarCentroides(datos);
+
+				int error_nuevo = poblaciones[i].calcularErrorGenerado(restricciones);
+				float val_nuevo = poblaciones[i].desviacionGeneral(datos)+lambda*error_nuevo;
+
+				if(val_orig > val_nuevo){
+					val_orig = val_nuevo;
+				}
+				else{
+					poblaciones[i].asignaDato(e,cluster_orig);
+					poblaciones[i].actualizarCentroides(datos);
+				}
+			}
+		}
+	}
+
+}

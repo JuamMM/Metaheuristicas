@@ -45,4 +45,6 @@ class PAR{
 		void algoritmoCruce(int padre1, int padre2);
 
 		void algoritmoMutacion(int pob);
+
+		void BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
 };
