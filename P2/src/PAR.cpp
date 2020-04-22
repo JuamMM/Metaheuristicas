@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <map>
 #include <stdio.h>
@@ -43,4 +44,41 @@ void PAR::algoritmoSeleccionador(double lambda, vector<vector<float>> datos, lis
 			pob_nueva.push_back(poblaciones[pob2]);
 		}
 	}
+
+	poblaciones = pob_nueva;
+}
+
+
+void PAR::algoritmoCruce(int padre1, int padre2){
+	vector<int> cromosomas;
+	Poblacion hijo(tam,tam_centro,num_clusters,minimo,maximo);
+	int datos_asignados = 0;
+
+	for(int i=0; i<tam; i++){
+		cromosomas.push_back(i);
+	}
+
+	while(datos_asignados < tam/2){
+		int indice = rand() % cromosomas.size();
+		int dato = cromosomas[indice];
+		cromosomas.erase(remove(cromosomas.begin(),cromosomas.end(),dato),cromosomas.end());
+		hijo.asignaDato(dato,poblaciones[padre1].devuelveCluster(dato));
+		datos_asignados++;
+	}
+
+	for(auto it_cro = cromosomas.begin(); it_cro != cromosomas.end(); it_cro++){
+		int dato = (*it_cro);
+		hijo.asignaDato(dato,poblaciones[padre2].devuelveCluster(dato));
+	}
+
+}
+
+void PAR::algoritmoMutacion(int pob){
+	int dato = rand()%tam;
+	int valor_nuevo = poblaciones[pob].devuelveCluster(dato);
+	while(valor_nuevo == poblaciones[pob].devuelveCluster(dato)){
+		valor_nuevo = rand() %num_clusters;
+	}
+
+	poblaciones[pob].asignaDato(dato,valor_nuevo);
 }

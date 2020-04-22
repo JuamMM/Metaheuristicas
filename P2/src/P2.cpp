@@ -244,21 +244,11 @@ int main(int argc, char **argv){
 		datos_centro = datos[0].size();
 		calculaLambda();
 		PAR problema(poblaciones, clusters, datos_centro, numero_datos, minimo, maximo);
-
-		start_timers();
-		Poblacion pob = BL(numero_datos, clusters, minimo, maximo);
-		cout<<"Tiempo: "<<elapsed_time()<<endl;
-		pob.imprimePoblacion();
-		cout<<"Error: "<<pob.calcularErrorGenerado(restricciones)<<endl;
-
 		srand(time( NULL ));
 
 		problema.generarPoblacionesAleatorias(numero_datos);
 		problema.imprimirPoblaciones();
-		for(int i=0; i<poblaciones; i++){
-			cout<<"Error poblacion "<<i<<": "<<endl;
-			cout<<problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
-			cout<<endl;
-		}
+		problema.algoritmoMutacion(0);
+		problema.imprimirPoblaciones();
 	}
 }
