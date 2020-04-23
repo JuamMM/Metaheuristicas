@@ -48,8 +48,39 @@ void PAR::algoritmoSeleccionador(double lambda, vector<vector<float>> datos, lis
 	poblaciones = pob_nueva;
 }
 
+int PAR::mejorCromosoma(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res){
+	float mejor_valoracion = 10000.0;
+	int devolver = 0;
 
-void PAR::algoritmoCruce(int padre1, int padre2){
+	for(int i=0; i<num_poblaciones;i++){
+		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+
+		if(val < mejor_valoracion){
+			mejor_valoracion = val;
+			devolver = i;
+		}
+	}
+
+	return devolver;
+}
+
+int PAR::peorCromosoma(double lambda, list<tuple<int,int,double>> res, vector<vector<float>> datos){
+	float mejor_valoracion = -1;
+	int devolver = 0;
+
+	for(int i=0; i<num_poblaciones;i++){
+		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+
+		if(val > mejor_valoracion){
+			mejor_valoracion = val;
+			devolver = i;
+		}
+	}
+
+	return devolver;
+}
+
+Poblacion PAR::algoritmoCruce(int padre1, int padre2){
 	vector<int> cromosomas;
 	Poblacion hijo(tam,tam_centro,num_clusters,minimo,maximo);
 	int datos_asignados = 0;
@@ -71,27 +102,42 @@ void PAR::algoritmoCruce(int padre1, int padre2){
 		hijo.asignaDato(dato,poblaciones[padre2].devuelveCluster(dato));
 	}
 
+	return hijo;
 }
 
-void PAR::algoritmoMutacion(int pob){
-	int dato = rand()%tam;
-	int valor_nuevo = poblaciones[pob].devuelveCluster(dato);
-	while(valor_nuevo == poblaciones[pob].devuelveCluster(dato)){
-		valor_nuevo = rand() %num_clusters;
-	}
+void PAR::algoritmoMutacion(int pob, int prob_muta, int rango_muta){
+	int muta = rand() % rango_muta;
+	if(muta <= prob_muta){
+		int dato = rand()%tam;
+		int valor_nuevo = poblaciones[pob].devuelveCluster(dato);
+		while(valor_nuevo == poblaciones[pob].devuelveCluster(dato)){
+			valor_nuevo = rand() %num_clusters;
+		}
 
-	poblaciones[pob].asignaDato(dato,valor_nuevo);
+		poblaciones[pob].asignaDato(dato,valor_nuevo);
+	}
 }
 
 void PAR::BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos){
+	int errores_max = 0.1*tam;
+	vector<int> indices;
+
+	for(int i=0;i <tam; i++){
+		indices.push_back(i);
+	}
+
 	for(int i=0;i<num_poblaciones;i++){
-		for(int e=0;e<tam;e++){
+		random_shuffle(indices.begin(), indices.end());
+		int errores = 0;
+
+		for(auto it = indices.begin(); it != indices.end() && errores<errores_max;it++){
+			int e = (*it);
 			int cluster_orig = poblaciones[i].devuelveCluster(e);
 			int error_orig = poblaciones[i].calcularErrorGenerado(restricciones);
 
 			float val_orig = poblaciones[i].desviacionGeneral(datos)+lambda*error_orig;
 
-			for(int cluster_nuevo = 0; cluster_nuevo<num_clusters;cluster_nuevo++){
+			for(int cluster_nuevo = 0; cluster_nuevo<num_clusters && errores<errores_max;cluster_nuevo++){
 				poblaciones[i].asignaDato(e,cluster_nuevo);
 				poblaciones[i].actualizarCentroides(datos);
 
@@ -104,6 +150,7 @@ void PAR::BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vect
 				else{
 					poblaciones[i].asignaDato(e,cluster_orig);
 					poblaciones[i].actualizarCentroides(datos);
+					errores++;
 				}
 			}
 		}

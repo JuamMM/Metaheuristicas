@@ -229,6 +229,64 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 	return pob;
 }
 
+void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
+	float prob_cruce = 0.7;
+	int prob_muta = 1, rango_muta = 1000;
+	int criterio_parada = 100000, evaluaciones = 0;
+
+	int numero_cruces = ((poblaciones/2)*prob_cruce);
+
+	Poblacion mejor_solucion(num_datos, datos_centro, num_clusters, min, max);
+
+	while(evaluaciones<criterio_parada){
+		bool tiene_mejor_sol = false;
+		cout<<evaluaciones<<endl;
+
+		estado.algoritmoSeleccionador(lambda,datos,restricciones);
+
+		mejor_solucion = estado.devuelvePoblacion(estado.mejorCromosoma(lambda,datos,restricciones));
+
+		for(int i=0; i<numero_cruces; i++){
+			int padre1 = rand() % poblaciones;
+			int padre2 = padre1;
+
+
+			while(padre2 == padre1){
+				padre2 = rand() % poblaciones;
+			}
+
+			Poblacion hijo1 = estado.algoritmoCruce(padre1,padre2);
+			Poblacion hijo2 = estado.algoritmoCruce(padre2,padre1);
+
+			estado.eliminaPoblacion(estado.devuelvePoblacion(padre1));
+			estado.eliminaPoblacion(estado.devuelvePoblacion(padre2));
+
+			estado.aniadePoblacion(hijo1);
+			estado.aniadePoblacion(hijo2);
+
+		}
+
+		for(int i=0; i<poblaciones; i++){
+			if(mejor_solucion == estado.devuelvePoblacion(i)){
+				tiene_mejor_sol = true;
+			}
+		}
+
+		if(!tiene_mejor_sol){
+			int peor = estado.peorCromosoma(lambda,restricciones,datos);
+
+			estado.eliminaPoblacion(estado.devuelvePoblacion(peor));
+			estado.aniadePoblacion(mejor_solucion);
+		}
+
+		for(int i=0;i<poblaciones;i++){
+			estado.algoritmoMutacion(i,prob_muta,rango_muta);
+		}
+
+		evaluaciones++;
+	}
+}
+
 int main(int argc, char **argv){
 	if(argc < 5){
 		cout<<"La forma de uso de este programa es: ./P2 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones>"<<endl;
@@ -251,7 +309,8 @@ int main(int argc, char **argv){
 		for(int i=0; i<poblaciones; i++){
 			cout<<"Error "<<i<<" "<<problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones)<<endl;
 		}
-		problema.BLsuave(lambda,restricciones,datos);
+
+		AGG_SF(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
 		problema.imprimirPoblaciones();
 		for(int i=0; i<poblaciones; i++){
 			cout<<"Error "<<i<<" "<<problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones)<<endl;

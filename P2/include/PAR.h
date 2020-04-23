@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <vector>
 #include <list>
 #include <tuple>
@@ -42,9 +43,28 @@ class PAR{
 
 		void algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> rest);
 
-		void algoritmoCruce(int padre1, int padre2);
+		Poblacion algoritmoCruce(int padre1, int padre2);
 
-		void algoritmoMutacion(int pob);
+		void algoritmoMutacion(int pob, int prob_muta, int rangp_muta);
+
+		int mejorCromosoma(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res);
 
 		void BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
+
+		void eliminaPoblacion(Poblacion pob){
+			for(auto it = poblaciones.begin(); it != poblaciones.end(); it++){
+				if(pob == (*it)){
+					poblaciones.erase(it);
+				}
+			}
+			tam--;
+		}
+
+		void aniadePoblacion(Poblacion pob){
+			poblaciones.push_back(pob);
+			tam++;
+		}
+
+		int peorCromosoma(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
+
 };

@@ -25,6 +25,10 @@ class Poblacion{
 			return centroides[indice];
 		}
 
+		vector<int> devuelveDatos(){
+			return datos;
+		}
+
 		int devuelveCluster(int indice){
 			return datos[indice];
 		}
@@ -47,5 +51,9 @@ class Poblacion{
 		void vaciarClusters(){
 			vector<int> vacio(num_datos,-1);
 			datos = datos;
+		}
+
+		bool operator== (Poblacion comp){
+			return comp.devuelveDatos() == datos;
 		}
 };
