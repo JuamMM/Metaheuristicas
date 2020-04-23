@@ -25,6 +25,10 @@ class Poblacion{
 			return centroides[indice];
 		}
 
+		int tamCluster(int indice){
+			return tam[indice];
+		}
+
 		vector<int> devuelveDatos(){
 			return datos;
 		}
@@ -32,6 +36,7 @@ class Poblacion{
 		int devuelveCluster(int indice){
 			return datos[indice];
 		}
+
 		int tamanio(){
 			return datos.size();
 		}

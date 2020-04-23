@@ -37,6 +37,8 @@ class PAR{
 			return poblaciones[indice];
 		}
 
+		void reparacion();
+
 		void generarPoblacionesAleatorias(int num_datos);
 
 		void imprimirPoblaciones();
@@ -51,14 +53,8 @@ class PAR{
 
 		void BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
 
-		void eliminaPoblacion(Poblacion pob){
-			poblaciones.erase(remove(poblaciones.begin(),poblaciones.end(),pob),poblaciones.end());
-			num_poblaciones--;
-		}
-
-		void aniadePoblacion(Poblacion pob){
-			poblaciones.push_back(pob);
-			num_poblaciones++;
+		void sustituyePoblacion(int indice, Poblacion pob){
+			poblaciones[indice] = pob;
 		}
 
 		int peorCromosoma(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);

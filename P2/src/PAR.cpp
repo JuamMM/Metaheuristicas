@@ -23,14 +23,27 @@ void PAR::imprimirPoblaciones(){
 	cout<<endl;
 }
 
+void PAR::reparacion(){
+	for(int i=0; i<num_poblaciones; i++){
+		for(int cluster=0; cluster<num_clusters; cluster++){
+			if(poblaciones[i].tamCluster(cluster) == 0){
+				int dato = rand()%tam;
+				poblaciones[i].asignaDato(dato,cluster);
+			}
+		}
+	}
+}
+
 void PAR::algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> rest){
 	vector<Poblacion> pob_nueva;
 	for(int i=0; i<num_poblaciones; i++){
 		int pob1 = (rand()%num_poblaciones);
 		int pob2 = (rand()%num_poblaciones);
+
 		while(pob1 == pob2){
 			pob2 = (rand()%num_poblaciones);
 		}
+
 		int error1 = poblaciones[pob1].calcularErrorGenerado(rest);
 		int error2 = poblaciones[pob2].calcularErrorGenerado(rest);
 
@@ -89,32 +102,32 @@ Poblacion PAR::algoritmoCruce(int padre1, int padre2){
 		cromosomas.push_back(i);
 	}
 
-	while(datos_asignados < tam/2){
-		int indice = rand() % cromosomas.size();
-		int dato = cromosomas[indice];
-		cromosomas.erase(remove(cromosomas.begin(),cromosomas.end(),dato),cromosomas.end());
-		hijo.asignaDato(dato,poblaciones[padre1].devuelveCluster(dato));
-		datos_asignados++;
-	}
+	random_shuffle(cromosomas.begin(), cromosomas.end());
 
 	for(auto it_cro = cromosomas.begin(); it_cro != cromosomas.end(); it_cro++){
-		int dato = (*it_cro);
-		hijo.asignaDato(dato,poblaciones[padre2].devuelveCluster(dato));
+		int dato = cromosomas[(*it_cro)];
+		if(datos_asignados<cromosomas.size()/2){
+			hijo.asignaDato(dato,poblaciones[padre1].devuelveCluster(dato));
+		}
+		else{
+			hijo.asignaDato(dato,poblaciones[padre2].devuelveCluster(dato));
+		}
+		datos_asignados++;
 	}
 
 	return hijo;
 }
 
 void PAR::algoritmoMutacion(int pob, int prob_muta, int rango_muta){
-	int muta = rand() % rango_muta;
-	if(muta <= prob_muta){
-		int dato = rand()%tam;
-		int valor_nuevo = poblaciones[pob].devuelveCluster(dato);
-		while(valor_nuevo == poblaciones[pob].devuelveCluster(dato)){
-			valor_nuevo = rand() %num_clusters;
+	for(int dato=0; dato<tam;dato++){
+		int muta = rand() % rango_muta;
+		if(muta <= prob_muta){
+			int valor_nuevo = poblaciones[pob].devuelveCluster(dato);
+			while(valor_nuevo == poblaciones[pob].devuelveCluster(dato)){
+				valor_nuevo = rand() %num_clusters;
+			}
+			poblaciones[pob].asignaDato(dato,valor_nuevo);
 		}
-
-		poblaciones[pob].asignaDato(dato,valor_nuevo);
 	}
 }
 
