@@ -5,7 +5,7 @@ SRC     = $(HOME)/src
 OBJ     = $(HOME)/obj
 LIB     = $(HOME)/lib
 
-FLAGS = --std=c++11 -O3
+FLAGS = --std=c++11 -g
 
 all: $(BIN)/P2
 

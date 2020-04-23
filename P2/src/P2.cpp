@@ -234,7 +234,7 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	int prob_muta = 1, rango_muta = 1000;
 	int criterio_parada = 100000, evaluaciones = 0;
 
-	int numero_cruces = ((poblaciones/2)*prob_cruce);
+	int numero_cruces = (poblaciones/2)*prob_cruce;
 
 	Poblacion mejor_solucion(num_datos, datos_centro, num_clusters, min, max);
 
@@ -250,21 +250,28 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 			int padre1 = rand() % poblaciones;
 			int padre2 = padre1;
 
-
 			while(padre2 == padre1){
 				padre2 = rand() % poblaciones;
 			}
 
-			Poblacion hijo1 = estado.algoritmoCruce(padre1,padre2);
-			Poblacion hijo2 = estado.algoritmoCruce(padre2,padre1);
+			Poblacion hijo1(num_datos, datos_centro, num_clusters, min, max);
+			hijo1 = estado.algoritmoCruce(padre1,padre2);
+
+			Poblacion hijo2(num_datos, datos_centro, num_clusters, min, max);
+			hijo2= estado.algoritmoCruce(padre2,padre1);
 
 			estado.eliminaPoblacion(estado.devuelvePoblacion(padre1));
 			estado.eliminaPoblacion(estado.devuelvePoblacion(padre2));
 
+			cout<<"Elimina bien"<<endl;
+
 			estado.aniadePoblacion(hijo1);
 			estado.aniadePoblacion(hijo2);
 
+			cout<<"aniade bien"<<endl;
+
 		}
+		/*
 
 		for(int i=0; i<poblaciones; i++){
 			if(mejor_solucion == estado.devuelvePoblacion(i)){
@@ -282,7 +289,7 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 		for(int i=0;i<poblaciones;i++){
 			estado.algoritmoMutacion(i,prob_muta,rango_muta);
 		}
-
+*/
 		evaluaciones++;
 	}
 }

@@ -52,17 +52,13 @@ class PAR{
 		void BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
 
 		void eliminaPoblacion(Poblacion pob){
-			for(auto it = poblaciones.begin(); it != poblaciones.end(); it++){
-				if(pob == (*it)){
-					poblaciones.erase(it);
-				}
-			}
-			tam--;
+			poblaciones.erase(remove(poblaciones.begin(),poblaciones.end(),pob),poblaciones.end());
+			num_poblaciones--;
 		}
 
 		void aniadePoblacion(Poblacion pob){
 			poblaciones.push_back(pob);
-			tam++;
+			num_poblaciones++;
 		}
 
 		int peorCromosoma(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
