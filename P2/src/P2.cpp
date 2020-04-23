@@ -295,15 +295,12 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 		generaciones++;
 	}
 
-
 	int mejor = estado.mejorCromosoma(lambda,datos,restricciones);
 	cout<<"Mejor solucion:"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
 	estado.devuelvePoblacion(mejor).imprimePoblacion();
-
-	cout<<"Mejor valoracion: "<<valoracion<<endl;
 	cout<<"Evaluaciones: "<<evaluaciones<<endl;
 	cout<<"Generaciones: "<<generaciones<<endl;
 }
@@ -338,7 +335,7 @@ int main(int argc, char **argv){
 
 		start_timers();
 		AGG_SF(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<elapsed_time()<<endl;
+		cout<<"Tiempo: "<<elapsed_time()<<endl;
 
 	}
 }
