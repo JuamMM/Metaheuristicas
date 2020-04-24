@@ -229,7 +229,7 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 	return pob;
 }
 
-void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
+void AGG_UN(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
 	float prob_cruce = 0.7;
 	int prob_muta = 1, rango_muta = 1000;
 	float valoracion = 10000000;
@@ -255,10 +255,10 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 			}
 
 			Poblacion hijo1(num_datos, datos_centro, num_clusters, min, max);
-			hijo1 = estado.algoritmoCruce(padre1,padre2);
+			hijo1 = estado.algoritmoCruceUN(padre1,padre2);
 
 			Poblacion hijo2(num_datos, datos_centro, num_clusters, min, max);
-			hijo2= estado.algoritmoCruce(padre2,padre1);
+			hijo2= estado.algoritmoCruceUN(padre2,padre1);
 
 			estado.sustituyePoblacion(padre1,hijo1);
 			estado.sustituyePoblacion(padre2,hijo2);
@@ -296,7 +296,83 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	}
 
 	int mejor = estado.mejorCromosoma(lambda,datos,restricciones);
-	cout<<"Mejor solucion:"<<endl;
+	cout<<"Mejor solucion AGG-UN"<<endl;
+	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
+	cout<<"Error: "<<error<<endl;
+	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
+	estado.devuelvePoblacion(mejor).imprimePoblacion();
+	cout<<"Evaluaciones: "<<evaluaciones<<endl;
+	cout<<"Generaciones: "<<generaciones<<endl;
+}
+
+void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
+	float prob_cruce = 0.7;
+	int prob_muta = 1, rango_muta = 1000;
+	float valoracion = 10000000;
+	int criterio_parada = 100000, evaluaciones = 0, generaciones = 0;
+
+	int numero_cruces = (poblaciones/2)*prob_cruce;
+
+	Poblacion mejor_solucion(num_datos, datos_centro, num_clusters, min, max);
+
+	while(evaluaciones<criterio_parada){
+		bool tiene_mejor_sol = false;
+
+		mejor_solucion = estado.devuelvePoblacion(estado.mejorCromosoma(lambda,datos,restricciones));
+
+		estado.algoritmoSeleccionador(lambda,datos,restricciones);
+
+		for(int i=0; i<numero_cruces; i++){
+			int padre1 = rand() % poblaciones;
+			int padre2 = padre1;
+
+			while(padre2 == padre1){
+				padre2 = rand() % poblaciones;
+			}
+
+			Poblacion hijo1(num_datos, datos_centro, num_clusters, min, max);
+			hijo1 = estado.algoritmoCruceSF(padre1,padre2);
+
+			Poblacion hijo2(num_datos, datos_centro, num_clusters, min, max);
+			hijo2= estado.algoritmoCruceSF(padre2,padre1);
+
+			estado.sustituyePoblacion(padre1,hijo1);
+			estado.sustituyePoblacion(padre2,hijo2);
+			evaluaciones++;
+		}
+
+		for(int i=0;i<poblaciones;i++){
+			estado.algoritmoMutacion(i,prob_muta,rango_muta);
+			evaluaciones++;
+		}
+
+		for(int i=0; i<poblaciones; i++){
+			if(mejor_solucion == estado.devuelvePoblacion(i)){
+				tiene_mejor_sol = true;
+			}
+		}
+
+		estado.reparacion();
+
+		if(!tiene_mejor_sol){
+			int peor = estado.peorCromosoma(lambda,restricciones,datos);
+
+			estado.sustituyePoblacion(peor,mejor_solucion);
+		}
+
+		for(int i=0; i<poblaciones;i++){
+			int error = estado.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
+			float valoracion_nueva = estado.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
+			if(valoracion > valoracion_nueva){
+				valoracion = valoracion_nueva;
+			}
+		}
+
+		generaciones++;
+	}
+
+	int mejor = estado.mejorCromosoma(lambda,datos,restricciones);
+	cout<<"Mejor solucion AGG-SF"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
@@ -332,10 +408,21 @@ int main(int argc, char **argv){
 			}
 		}
 		cout<<"Valoracion ini: "<<valoracion<<endl;
+		start_timers();
+		AGG_UN(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
+		cout<<"Tiempo AGG-UN: "<<elapsed_time()<<endl;
 
+		problema.generarPoblacionesAleatorias(numero_datos);
+		for(int i=0; i<poblaciones;i++){
+			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
+			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
+			if(valoracion > valoracion_nueva){
+				valoracion = valoracion_nueva;
+			}
+		}
+		cout<<"Valoracion ini: "<<valoracion<<endl;
 		start_timers();
 		AGG_SF(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<"Tiempo: "<<elapsed_time()<<endl;
-
+		cout<<"Tiempo AGG-SF: "<<elapsed_time()<<endl;
 	}
 }

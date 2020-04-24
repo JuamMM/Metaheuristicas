@@ -93,7 +93,7 @@ int PAR::peorCromosoma(double lambda, list<tuple<int,int,double>> res, vector<ve
 	return devolver;
 }
 
-Poblacion PAR::algoritmoCruce(int padre1, int padre2){
+Poblacion PAR::algoritmoCruceUN(int padre1, int padre2){
 	vector<int> cromosomas;
 	Poblacion hijo(tam,tam_centro,num_clusters,minimo,maximo);
 	int datos_asignados = 0;
@@ -113,6 +113,31 @@ Poblacion PAR::algoritmoCruce(int padre1, int padre2){
 			hijo.asignaDato(dato,poblaciones[padre2].devuelveCluster(dato));
 		}
 		datos_asignados++;
+	}
+
+	return hijo;
+}
+
+Poblacion PAR::algoritmoCruceSF(int padre1, int padre2){
+	vector<int> cromosomas;
+	int inicio_segmento = rand() % tam;
+	int longitud_segmento = rand() % tam;
+	int fin_segmento = inicio_segmento + longitud_segmento;
+	Poblacion hijo(tam,tam_centro,num_clusters,minimo,maximo);
+	int datos_asignados = 0;
+
+	for(int i=0; i<tam; i++){
+		cromosomas.push_back(i);
+	}
+
+	for(auto it_cro = cromosomas.begin(); it_cro != cromosomas.end(); it_cro++){
+		int dato = cromosomas[(*it_cro)];
+		if(dato >= inicio_segmento && dato<=fin_segmento){
+			hijo.asignaDato(dato,poblaciones[padre1].devuelveCluster(dato));
+		}
+		else{
+			hijo.asignaDato(dato,poblaciones[padre2].devuelveCluster(dato));
+		}
 	}
 
 	return hijo;

@@ -45,7 +45,9 @@ class PAR{
 
 		void algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> rest);
 
-		Poblacion algoritmoCruce(int padre1, int padre2);
+		Poblacion algoritmoCruceUN(int padre1, int padre2);
+
+		Poblacion algoritmoCruceSF(int padre1, int padre2);
 
 		void algoritmoMutacion(int pob, int prob_muta, int rangp_muta);
 
