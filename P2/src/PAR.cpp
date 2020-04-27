@@ -156,7 +156,91 @@ void PAR::algoritmoMutacion(int pob, int prob_muta, int rango_muta){
 	}
 }
 
-void PAR::BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos){
+void PAR::BLsuaveAleatoria(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos){
+	int errores_max = 0.1*tam;
+	vector<int> indices;
+
+	for(int i=0;i <tam; i++){
+		indices.push_back(i);
+	}
+
+	for(int i=0;i<num_poblaciones;i++){
+		int aplicarbl = rand() %100;
+		if(aplicarbl <= 10){
+			random_shuffle(indices.begin(), indices.end());
+			int errores = 0;
+
+			for(auto it = indices.begin(); it != indices.end() && errores<errores_max;it++){
+				int e = (*it);
+				int cluster_orig = poblaciones[i].devuelveCluster(e);
+				int error_orig = poblaciones[i].calcularErrorGenerado(restricciones);
+
+				float val_orig = poblaciones[i].desviacionGeneral(datos)+lambda*error_orig;
+
+				for(int cluster_nuevo = 0; cluster_nuevo<num_clusters && errores<errores_max;cluster_nuevo++){
+					poblaciones[i].asignaDato(e,cluster_nuevo);
+					poblaciones[i].actualizarCentroides(datos);
+
+					int error_nuevo = poblaciones[i].calcularErrorGenerado(restricciones);
+					float val_nuevo = poblaciones[i].desviacionGeneral(datos)+lambda*error_nuevo;
+
+					if(val_orig > val_nuevo){
+						val_orig = val_nuevo;
+					}
+					else{
+						poblaciones[i].asignaDato(e,cluster_orig);
+						poblaciones[i].actualizarCentroides(datos);
+						errores++;
+					}
+				}
+			}
+		}
+	}
+}
+
+void PAR::BLsuaveMejores(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos, int num_mejores){
+	int errores_max = 0.1*tam;
+	vector<int> indices;
+
+	for(int i=0;i <tam; i++){
+		indices.push_back(i);
+	}
+
+	vector<int> mejores_cro = mejoresPadres(lambda,datos,restricciones,num_mejores);
+
+	for(auto it = mejores_cro.begin(); it != mejores_cro.end(); it++){
+		int i = (*it);
+		random_shuffle(indices.begin(), indices.end());
+		int errores = 0;
+
+		for(auto it = indices.begin(); it != indices.end() && errores<errores_max;it++){
+			int e = (*it);
+			int cluster_orig = poblaciones[i].devuelveCluster(e);
+			int error_orig = poblaciones[i].calcularErrorGenerado(restricciones);
+
+			float val_orig = poblaciones[i].desviacionGeneral(datos)+lambda*error_orig;
+
+			for(int cluster_nuevo = 0; cluster_nuevo<num_clusters && errores<errores_max;cluster_nuevo++){
+				poblaciones[i].asignaDato(e,cluster_nuevo);
+				poblaciones[i].actualizarCentroides(datos);
+
+				int error_nuevo = poblaciones[i].calcularErrorGenerado(restricciones);
+				float val_nuevo = poblaciones[i].desviacionGeneral(datos)+lambda*error_nuevo;
+
+				if(val_orig > val_nuevo){
+					val_orig = val_nuevo;
+				}
+				else{
+					poblaciones[i].asignaDato(e,cluster_orig);
+					poblaciones[i].actualizarCentroides(datos);
+					errores++;
+				}
+			}
+		}
+	}
+}
+
+void PAR::BLsuaveCompleta(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos){
 	int errores_max = 0.1*tam;
 	vector<int> indices;
 
@@ -229,28 +313,21 @@ void PAR::sustituirPeoresPadres(double lambda, vector<vector<float>> datos, list
 	}
 }
 
-vector<int> PAR::mejoresPadres(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res){
-	float mejor_val1 = 10000, mejor_val2 = 100000;
+vector<int> PAR::mejoresPadres(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res, int num_padres){
+	float mejor_val;
 
-	vector<int>devolver(2,0);
+	vector<int>devolver(num_padres,-1);
 
-	for(int i=0; i<num_poblaciones;i++){
-		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
-
-		if(val < mejor_val1){
-			mejor_val1 = val;
-			devolver[0] = i;
+	for(int mejor = 0; mejor <num_padres; mejor++){
+		mejor_val = 1000000;
+		for(int i=0; i<num_poblaciones;i++){
+			float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+			if(val < mejor_val && find(devolver.begin(),devolver.end(),i) == devolver.end()){
+				mejor_val = val;
+				devolver[mejor] = i;
+			}
 		}
 	}
-
-	for(int i=0; i<num_poblaciones;i++){
-		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
-		if(val < mejor_val2 && i != devolver[0]){
-			 mejor_val2 = val;
-			 devolver[0] = i;
-		}
-	}
-
 
 	return devolver;
 

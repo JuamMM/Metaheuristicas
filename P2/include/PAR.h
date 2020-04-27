@@ -47,7 +47,7 @@ class PAR{
 
 		void sustituirPeoresPadres(double lambda,vector<vector<float>> datos, list<tuple<int,int,double>> res, Poblacion pob1, Poblacion pob2);
 
-		vector<int> mejoresPadres(double lambda,vector<vector<float>> datos, list<tuple<int,int,double>> res);
+		vector<int> mejoresPadres(double lambda,vector<vector<float>> datos, list<tuple<int,int,double>> res, int num_padres);
 
 		Poblacion algoritmoCruceUN(int padre1, int padre2);
 
@@ -57,7 +57,11 @@ class PAR{
 
 		int mejorCromosoma(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res);
 
-		void BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
+		void BLsuaveMejores(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos, int num_mejores);
+
+		void BLsuaveAleatoria(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
+
+		void BLsuaveCompleta(double lambda, list<tuple<int,int,double>> restricciones, vector<vector<float>> datos);
 
 		void sustituyePoblacion(int indice, Poblacion pob){
 			poblaciones[indice] = pob;
