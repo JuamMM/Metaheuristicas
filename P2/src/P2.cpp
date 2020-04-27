@@ -303,6 +303,7 @@ void Memetico(PAR estado, int num_datos, int datos_centro, int num_clusters, int
 	cout<<"Mejor solucion Memetico"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
 	estado.devuelvePoblacion(mejor).imprimePoblacion();
 	cout<<"Evaluaciones: "<<evaluaciones<<endl;
@@ -379,6 +380,7 @@ void AGG_UN(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	cout<<"Mejor solucion AGG-UN"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
 	estado.devuelvePoblacion(mejor).imprimePoblacion();
 	cout<<"Evaluaciones: "<<evaluaciones<<endl;
@@ -455,6 +457,7 @@ void AGG_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	cout<<"Mejor solucion AGG-SF"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
 	estado.devuelvePoblacion(mejor).imprimePoblacion();
 	cout<<"Evaluaciones: "<<evaluaciones<<endl;
@@ -521,6 +524,7 @@ void AGE_SF(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	cout<<"Mejor solucion AGE-SF"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
 	estado.devuelvePoblacion(mejor).imprimePoblacion();
 	cout<<"Evaluaciones: "<<evaluaciones<<endl;
@@ -587,6 +591,7 @@ void AGE_UN(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	cout<<"Mejor solucion AGE-UN"<<endl;
 	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
 	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
 	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
 	estado.devuelvePoblacion(mejor).imprimePoblacion();
 	cout<<"Evaluaciones: "<<evaluaciones<<endl;
@@ -594,14 +599,18 @@ void AGE_UN(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 }
 
 int main(int argc, char **argv){
-	if(argc < 5){
-		cout<<"La forma de uso de este programa es: ./P2 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones>"<<endl;
+	if(argc < 6){
+		cout<<"La forma de uso de este programa es: ./P2 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
 	}
 	else{
 		int clusters = stoi(argv[1]);
 		int poblaciones = stoi(argv[2]);
 		leerDatos(argv[3]);
 		leerRestricciones(argv[4]);
+		unsigned semilla = stoul(argv[5]);
+
+		srand(semilla);
+
 		int minimo = leerMaximoMinimo().first;
 		int maximo = leerMaximoMinimo().second;
 		int numero_datos = datos.size();
@@ -609,7 +618,6 @@ int main(int argc, char **argv){
 		calculaLambda();
 		float valoracion = 100000;
 		PAR problema(poblaciones, clusters, datos_centro, numero_datos, minimo, maximo);
-		srand(time( NULL ));
 
 		problema.generarPoblacionesAleatorias(numero_datos);
 		for(int i=0; i<poblaciones;i++){
