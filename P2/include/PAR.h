@@ -45,6 +45,10 @@ class PAR{
 
 		void algoritmoSeleccionador(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> rest);
 
+		void sustituirPeoresPadres(double lambda,vector<vector<float>> datos, list<tuple<int,int,double>> res, Poblacion pob1, Poblacion pob2);
+
+		vector<int> mejoresPadres(double lambda,vector<vector<float>> datos, list<tuple<int,int,double>> res);
+
 		Poblacion algoritmoCruceUN(int padre1, int padre2);
 
 		Poblacion algoritmoCruceSF(int padre1, int padre2);

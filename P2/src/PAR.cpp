@@ -193,5 +193,65 @@ void PAR::BLsuave(double lambda, list<tuple<int,int,double>> restricciones, vect
 			}
 		}
 	}
+}
+
+void PAR::sustituirPeoresPadres(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res, Poblacion pob1, Poblacion pob2){
+	float mejor_val1 = 0, mejor_val2 = 0;
+
+	vector<int>peores(2,0);
+
+	for(int i=0; i<num_poblaciones;i++){
+		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+
+		if(val > mejor_val1){
+			mejor_val1 = val;
+			peores[0] = i;
+		}
+	}
+
+	for(int i=0; i<num_poblaciones;i++){
+		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+		if(val > mejor_val2 && i != peores[0]){
+			 mejor_val2 = val;
+			 peores[1] = i;
+		}
+	}
+
+	float val1 = pob1.desviacionGeneral(datos)+lambda*pob1.calcularErrorGenerado(res);
+	float val2 = pob2.desviacionGeneral(datos)+lambda*pob2.calcularErrorGenerado(res);
+
+	if(mejor_val1 > val1){
+		sustituyePoblacion(peores[0],pob1);
+	}
+
+	if(mejor_val2 > val2){
+		sustituyePoblacion(peores[1],pob2);
+	}
+}
+
+vector<int> PAR::mejoresPadres(double lambda, vector<vector<float>> datos, list<tuple<int,int,double>> res){
+	float mejor_val1 = 10000, mejor_val2 = 100000;
+
+	vector<int>devolver(2,0);
+
+	for(int i=0; i<num_poblaciones;i++){
+		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+
+		if(val < mejor_val1){
+			mejor_val1 = val;
+			devolver[0] = i;
+		}
+	}
+
+	for(int i=0; i<num_poblaciones;i++){
+		float val = poblaciones[i].desviacionGeneral(datos)+lambda*poblaciones[i].calcularErrorGenerado(res);
+		if(val < mejor_val2 && i != devolver[0]){
+			 mejor_val2 = val;
+			 devolver[0] = i;
+		}
+	}
+
+
+	return devolver;
 
 }
