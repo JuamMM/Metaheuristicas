@@ -18,7 +18,7 @@ using namespace std;
 vector<vector<float>> datos;
 list<tuple<int,int,double>>restricciones;
 int datos_centro;
-float epsilon= 0.0005;
+float epsilon= 0.005;
 float lambda = 0;
 
 void leerDatos(string fich_datos){
@@ -136,6 +136,11 @@ Poblacion Greedy(int num_datos, int num_clusters, int min, int max){
 		}
 	}
 
+	int error_maximo = pob.calcularErrorGenerado(restricciones);
+	cout<<pob.desviacionGeneral(datos)<<"\t";
+	cout<<error_maximo<<"\t";
+	cout<<pob.desviacionGeneral(datos)+lambda*error_maximo<<"\t";
+
 	return pob;
 }
 
@@ -224,8 +229,11 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 		iteraciones++;
 	}
 
-	cout<<"Iteraciones: "<<iteraciones<<endl;
-	cout<<"Evaluaciones: "<<evaluaciones<<endl;
+	int error_maximo = pob.calcularErrorGenerado(restricciones);
+	cout<<pob.desviacionGeneral(datos)<<"\t";
+	cout<<error_maximo<<"\t";
+	cout<<pob.desviacionGeneral(datos)+lambda*error_maximo<<"\t";
+
 	return pob;
 }
 
@@ -781,6 +789,28 @@ int main(int argc, char **argv){
 		float valoracion = 100000;
 		PAR problema(poblaciones, clusters, datos_centro, numero_datos, minimo, maximo);
 
+		Poblacion pob(numero_datos, datos_centro, clusters, minimo, maximo);
+
+		cout<<endl;
+		cout<<"<-----------------------------------Greedy-------------------------------------->"<<endl;
+		cout<<endl;
+
+		start_timers();
+		Greedy(numero_datos,clusters,minimo,maximo);
+		cout<<elapsed_time()<<endl;
+
+		cout<<endl;
+		cout<<"<-----------------------------------BL-------------------------------------->"<<endl;
+		cout<<endl;
+
+		start_timers();
+		BL(numero_datos,clusters,minimo,maximo);
+		cout<<elapsed_time()<<endl;
+
+		cout<<endl;
+		cout<<"<--------------------------------------------------------------------------->"<<endl;
+		cout<<endl;
+		/*
 		problema.generarPoblacionesAleatorias(numero_datos);
 		for(int i=0; i<poblaciones;i++){
 			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
@@ -816,7 +846,7 @@ int main(int argc, char **argv){
 		cout<<endl;
 		cout<<"<------------------------------------------------------------------------->"<<endl;
 		cout<<endl;
-/*
+
 		cout<<"mejor valoracion ini: "<<valoracion<<endl;
 		start_timers();
 		MemeticoCompleto(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
