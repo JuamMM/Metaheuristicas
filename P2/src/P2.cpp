@@ -229,7 +229,169 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 	return pob;
 }
 
-void Memetico(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
+void MemeticoAleatorio(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
+	float prob_cruce = 0.7;
+	int prob_muta = 1, rango_muta = 1000;
+	float valoracion = 10000000;
+	int criterio_parada = 100000, evaluaciones = 0, generaciones = 0;
+
+	int numero_cruces = (poblaciones/2)*prob_cruce;
+
+	Poblacion mejor_solucion(num_datos, datos_centro, num_clusters, min, max);
+
+	while(evaluaciones<criterio_parada){
+		bool tiene_mejor_sol = false;
+
+		mejor_solucion = estado.devuelvePoblacion(estado.mejorCromosoma(lambda,datos,restricciones));
+
+		estado.algoritmoSeleccionador(lambda,datos,restricciones);
+
+		for(int i=0; i<numero_cruces; i++){
+			int padre1 = rand() % poblaciones;
+			int padre2 = padre1;
+
+			while(padre2 == padre1){
+				padre2 = rand() % poblaciones;
+			}
+
+			Poblacion hijo1(num_datos, datos_centro, num_clusters, min, max);
+			hijo1 = estado.algoritmoCruceUN(padre1,padre2);
+
+			Poblacion hijo2(num_datos, datos_centro, num_clusters, min, max);
+			hijo2= estado.algoritmoCruceUN(padre2,padre1);
+
+			estado.sustituyePoblacion(padre1,hijo1);
+			estado.sustituyePoblacion(padre2,hijo2);
+			evaluaciones++;
+		}
+
+		for(int i=0;i<poblaciones;i++){
+			estado.algoritmoMutacion(i,prob_muta,rango_muta);
+			evaluaciones++;
+		}
+
+		for(int i=0; i<poblaciones; i++){
+			if(mejor_solucion == estado.devuelvePoblacion(i)){
+				tiene_mejor_sol = true;
+			}
+		}
+
+		estado.reparacion();
+
+		if(!tiene_mejor_sol){
+			int peor = estado.peorCromosoma(lambda,restricciones,datos);
+
+			estado.sustituyePoblacion(peor,mejor_solucion);
+		}
+
+		for(int i=0; i<poblaciones;i++){
+			int error = estado.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
+			float valoracion_nueva = estado.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
+			if(valoracion > valoracion_nueva){
+				valoracion = valoracion_nueva;
+			}
+		}
+
+		if(generaciones % 10 == 0){
+			estado.BLsuaveAleatoria(lambda,restricciones,datos);
+		}
+
+		generaciones++;
+	}
+
+	int mejor = estado.mejorCromosoma(lambda,datos,restricciones);
+	cout<<"Mejor solucion Memetico Aleatoria"<<endl;
+	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
+	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
+	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
+	estado.devuelvePoblacion(mejor).imprimePoblacion();
+	cout<<"Evaluaciones: "<<evaluaciones<<endl;
+	cout<<"Generaciones: "<<generaciones<<endl;
+}
+
+void MemeticoCompleto(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
+	float prob_cruce = 0.7;
+	int prob_muta = 1, rango_muta = 1000;
+	float valoracion = 10000000;
+	int criterio_parada = 100000, evaluaciones = 0, generaciones = 0;
+
+	int numero_cruces = (poblaciones/2)*prob_cruce;
+
+	Poblacion mejor_solucion(num_datos, datos_centro, num_clusters, min, max);
+
+	while(evaluaciones<criterio_parada){
+		bool tiene_mejor_sol = false;
+
+		mejor_solucion = estado.devuelvePoblacion(estado.mejorCromosoma(lambda,datos,restricciones));
+
+		estado.algoritmoSeleccionador(lambda,datos,restricciones);
+
+		for(int i=0; i<numero_cruces; i++){
+			int padre1 = rand() % poblaciones;
+			int padre2 = padre1;
+
+			while(padre2 == padre1){
+				padre2 = rand() % poblaciones;
+			}
+
+			Poblacion hijo1(num_datos, datos_centro, num_clusters, min, max);
+			hijo1 = estado.algoritmoCruceUN(padre1,padre2);
+
+			Poblacion hijo2(num_datos, datos_centro, num_clusters, min, max);
+			hijo2= estado.algoritmoCruceUN(padre2,padre1);
+
+			estado.sustituyePoblacion(padre1,hijo1);
+			estado.sustituyePoblacion(padre2,hijo2);
+			evaluaciones++;
+		}
+
+		for(int i=0;i<poblaciones;i++){
+			estado.algoritmoMutacion(i,prob_muta,rango_muta);
+			evaluaciones++;
+		}
+
+		for(int i=0; i<poblaciones; i++){
+			if(mejor_solucion == estado.devuelvePoblacion(i)){
+				tiene_mejor_sol = true;
+			}
+		}
+
+		estado.reparacion();
+
+		if(!tiene_mejor_sol){
+			int peor = estado.peorCromosoma(lambda,restricciones,datos);
+
+			estado.sustituyePoblacion(peor,mejor_solucion);
+		}
+
+		for(int i=0; i<poblaciones;i++){
+			int error = estado.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
+			float valoracion_nueva = estado.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
+			if(valoracion > valoracion_nueva){
+				valoracion = valoracion_nueva;
+			}
+		}
+
+		if(generaciones % 10 == 0){
+			estado.BLsuaveCompleta(lambda,restricciones,datos);
+		}
+
+		generaciones++;
+	}
+
+	int mejor = estado.mejorCromosoma(lambda,datos,restricciones);
+	cout<<"Mejor solucion Memetico Completo"<<endl;
+	int error = estado.devuelvePoblacion(mejor).calcularErrorGenerado(restricciones);
+	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)<<endl;
+	cout<<"Valoracion: "<<estado.devuelvePoblacion(mejor).desviacionGeneral(datos)+lambda*error<<endl;
+	estado.devuelvePoblacion(mejor).imprimePoblacion();
+	cout<<"Evaluaciones: "<<evaluaciones<<endl;
+	cout<<"Generaciones: "<<generaciones<<endl;
+}
+
+void MemeticoMejores(PAR estado, int num_datos, int datos_centro, int num_clusters, int poblaciones, int min, int max){
 	float prob_cruce = 0.7;
 	int prob_muta = 1, rango_muta = 1000;
 	float valoracion = 10000000;
@@ -630,7 +792,34 @@ int main(int argc, char **argv){
 
 		cout<<"mejor valoracion ini: "<<valoracion<<endl;
 		start_timers();
-		Memetico(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
+		MemeticoAleatorio(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
+		cout<<"Tiempo memetico aleatorio: "<<elapsed_time()<<endl;
+
+		cout<<endl;
+		cout<<"<------------------------------------------------------------------------->"<<endl;
+		cout<<endl;
+
+		problema.generarPoblacionesAleatorias(numero_datos);
+		for(int i=0; i<poblaciones;i++){
+			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
+			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
+			if(valoracion > valoracion_nueva){
+				valoracion = valoracion_nueva;
+			}
+		}
+
+		cout<<"mejor valoracion ini: "<<valoracion<<endl;
+		start_timers();
+		MemeticoCompleto(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
+		cout<<"Tiempo memetico completo: "<<elapsed_time()<<endl;
+
+		cout<<endl;
+		cout<<"<------------------------------------------------------------------------->"<<endl;
+		cout<<endl;
+/*
+		cout<<"mejor valoracion ini: "<<valoracion<<endl;
+		start_timers();
+		MemeticoCompleto(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
 		cout<<"Tiempo memetico: "<<elapsed_time()<<endl;
 
 		cout<<endl;
@@ -701,7 +890,7 @@ int main(int argc, char **argv){
 			if(valoracion > valoracion_nueva){
 				valoracion = valoracion_nueva;
 			}
-		}
+		}*/
 
 	}
 }
