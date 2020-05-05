@@ -13,7 +13,7 @@ class Poblacion{
 		int num_datos;
 		int num_clusters;
 		vector<int> tam;
-		
+
 
 	public:
 		Poblacion(int max_datos, int datos_centro, int clusters, int min, int max);
@@ -49,6 +49,8 @@ class Poblacion{
 		void asignacionAleatoria();
 
 		void actualizarCentroides(vector<vector<float>> centros);
+
+		void Reparacion();
 
 		float distanciaIntraCluster(vector<vector<float>> centros, int cluster);
 

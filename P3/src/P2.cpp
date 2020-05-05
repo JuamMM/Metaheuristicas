@@ -20,6 +20,20 @@ list<tuple<int,int,double>>restricciones;
 int datos_centro;
 float epsilon= 0.0005;
 float lambda = 0;
+float temp_ini;
+float temp_fin = 0.001;
+
+float beta;
+float mu = 0.3;
+float phi = 0.3;
+int max_vecinos;
+int enfriamientos;
+int max_evaluaciones = 100000;
+float max_exitos;
+
+void calcularTemperaturaIni(Poblacion pob){
+	temp_ini = (mu*pob.calcularErrorGenerado(restricciones))/(-1*log(phi));
+}
 
 void leerDatos(string fich_datos){
 	ifstream fichero;
@@ -608,6 +622,58 @@ void AGE_UN(PAR estado, int num_datos, int datos_centro, int num_clusters, int p
 	cout<<"Generaciones: "<<generaciones<<endl;
 }
 
+Poblacion ES(int num_datos, int num_clusters, int min, int max){
+	Poblacion pob(num_datos, datos_centro, num_clusters, min, max);
+
+	pob.asignacionAleatoria();
+	calcularTemperaturaIni(pob);
+	beta = (temp_ini - temp_fin)/(enfriamientos*temp_ini*temp_fin);
+	int sol_aceptadas=1;
+	float temperatura=temp_ini;
+
+	while(temperatura >= temp_fin && sol_aceptadas>0){
+		sol_aceptadas=0;
+		cout<<"Temperatura: "<<temperatura<<endl;
+		double valoracion_ini = pob.desviacionGeneral(datos)+lambda*pob.calcularErrorGenerado(restricciones);
+
+		for(int vecino=0; vecino<max_vecinos && sol_aceptadas<max_exitos;vecino++){
+			double valoracion_nueva = valoracion_ini;
+			int dato = rand() % num_datos;
+			int cluster_orig = pob.devuelveCluster(dato);
+			int cluster_nuevo = rand() % num_clusters;
+
+			pob.asignaDato(dato,-1);
+
+			valoracion_nueva -= pob.calcularErrorParcial(dato,cluster_orig,restricciones);
+			valoracion_nueva += pob.calcularErrorParcial(dato,cluster_nuevo,restricciones);
+
+			double val = valoracion_nueva - valoracion_ini;
+
+			pob.Reparacion();
+
+			float U = rand() % 2;
+
+			if(val < 0 || U <= -1*exp(val*temperatura)){
+				valoracion_ini = pob.desviacionGeneral(datos)+lambda*pob.calcularErrorGenerado(restricciones);
+				pob.asignaDato(dato,cluster_nuevo);
+				sol_aceptadas++;
+			}
+			else{
+				pob.asignaDato(dato,cluster_orig);
+			}
+		}
+		cout<<"Soluciones aceptadas: "<<sol_aceptadas<<endl;
+		temperatura = temperatura/(1+beta*temperatura);
+	}
+	cout<<"Mejor solucion ES"<<endl;
+	int error = pob.calcularErrorGenerado(restricciones);
+	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<pob.desviacionGeneral(datos)<<endl;
+	cout<<"Valoracion: "<<pob.desviacionGeneral(datos)+lambda*error<<endl;
+	pob.imprimePoblacion();
+
+	return pob;
+}
 int main(int argc, char **argv){
 	if(argc < 6){
 		cout<<"La forma de uso de este programa es: ./P2 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
@@ -624,114 +690,16 @@ int main(int argc, char **argv){
 		int minimo = leerMaximoMinimo().first;
 		int maximo = leerMaximoMinimo().second;
 		int numero_datos = datos.size();
+
+		max_vecinos = 10*numero_datos;
+		max_exitos = 0.1*max_vecinos;
+		enfriamientos = pow(max_evaluaciones/max_vecinos,2);
+
 		datos_centro = datos[0].size();
 		calculaLambda();
-		float valoracion = 100000;
-		PAR problema(poblaciones, clusters, datos_centro, numero_datos, minimo, maximo);
-/*
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
 
 		start_timers();
-		Greedy(numero_datos,clusters,minimo,maximo);
-		cout<<"Tiempo Greedy: "<<elapsed_time()<<endl;
-
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
-
-		start_timers();
-		BL(numero_datos,clusters,minimo,maximo);
-		cout<<"Tiempo BL: "<<elapsed_time()<<endl;
-*/
-		problema.generarPoblacionesAleatorias(numero_datos);
-		for(int i=0; i<poblaciones;i++){
-			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
-			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
-			if(valoracion > valoracion_nueva){
-				valoracion = valoracion_nueva;
-			}
-		}
-
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
-
-		cout<<"mejor valoracion ini: "<<valoracion<<endl;
-		start_timers();
-		Memetico(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<"Tiempo memetico: "<<elapsed_time()<<endl;
-
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
-
-		problema.generarPoblacionesAleatorias(numero_datos);
-		for(int i=0; i<poblaciones;i++){
-			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
-			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
-			if(valoracion > valoracion_nueva){
-				valoracion = valoracion_nueva;
-			}
-		}
-		cout<<"mejor valoracion ini: "<<valoracion<<endl;
-		start_timers();
-		AGE_UN(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<"Tiempo AGE-UN: "<<elapsed_time()<<endl;
-
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
-
-		problema.generarPoblacionesAleatorias(numero_datos);
-		for(int i=0; i<poblaciones;i++){
-			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
-			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
-			if(valoracion > valoracion_nueva){
-				valoracion = valoracion_nueva;
-			}
-		}
-		cout<<"mejor valoracion ini: "<<valoracion<<endl;
-		start_timers();
-		AGE_SF(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<"Tiempo AGE-SF: "<<elapsed_time()<<endl;
-
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
-
-		cout<<"mejor valoracion ini: "<<valoracion<<endl;
-		start_timers();
-		AGG_UN(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<"Tiempo AGG-UN: "<<elapsed_time()<<endl;
-
-		problema.generarPoblacionesAleatorias(numero_datos);
-		for(int i=0; i<poblaciones;i++){
-			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
-			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
-			if(valoracion > valoracion_nueva){
-				valoracion = valoracion_nueva;
-			}
-		}
-
-		cout<<endl;
-		cout<<"<------------------------------------------------------------------------->"<<endl;
-		cout<<endl;
-
-		cout<<"mejor valoracion ini: "<<valoracion<<endl;
-		start_timers();
-		AGG_SF(problema, numero_datos, datos_centro, clusters, poblaciones, minimo, maximo);
-		cout<<"Tiempo AGG-SF: "<<elapsed_time()<<endl;
-
-		problema.generarPoblacionesAleatorias(numero_datos);
-		for(int i=0; i<poblaciones;i++){
-			int error = problema.devuelvePoblacion(i).calcularErrorGenerado(restricciones);
-			float valoracion_nueva = problema.devuelvePoblacion(i).desviacionGeneral(datos)+lambda*error;
-			if(valoracion > valoracion_nueva){
-				valoracion = valoracion_nueva;
-			}
-		}
-
+		ES(numero_datos,clusters,minimo,maximo);
+		cout<<"Tiempo: "<<elapsed_time()<<endl;
 	}
 }

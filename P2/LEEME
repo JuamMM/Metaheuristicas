@@ -1,12 +1,4 @@
 greedy: Al lanzarlo se llama al algoritmo greedy para cada conjunto de datos con 5 semillas distintas en cada iteración además de para cada conjunto de restricciones
+Para lanzar el algoritmo basta con entrar en la carpte bin y lanzar ./ejecuta, ya están preparadas las semillas y el progrma está listo para ejecutar los 7 algoritmos para cada conjunto de datos y restricciones,
 
-bl: como el anterior pero se llama a búsqueda local
-
-prueba: se permite suministrar un conjunto de argumentos para realizar pruebas específicas, se debe llamar como: ./prueba /prueba <fichero de datos><fichero de restricciones><numero de
-clusters><semilla><greedy>, si se introduce un argumento distinto de greedy se ejecuta búsqueda local
-
-ARP: clase donde se invoca a búsqueda local y greedy, además de otros procedimeintos necesarios para la realización de dichos algoritmos
-
-Cluster: clase de cluster
-
-práctica1 y práctica2 son el código fuente de greedy y bl respectivamente
+Para probar un conjunto de datos en concreto hay que llamar al programa de la siguiente forma ./P2 <numero cluster> <numero poblaciones> <path a los datos> <path a las restricciones> <semilla>

@@ -131,3 +131,11 @@ int Poblacion::calcularErrorParcial(int dato, int cluster1, list<tuple<int,int,d
 	}
 	return errores;
 }
+
+void Poblacion::Reparacion(){
+	for(int i=0; i<num_clusters;i++){
+		if(tam[i] == 0){
+			asignaDato(rand()%num_datos,i);
+		}
+	}
+}
