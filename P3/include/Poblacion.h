@@ -64,4 +64,6 @@ class Poblacion{
 		bool operator== (Poblacion comp){
 			return comp.devuelveDatos() == datos;
 		}
+
+		void mutacionFuerte();
 };

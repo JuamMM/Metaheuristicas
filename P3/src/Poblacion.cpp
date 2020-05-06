@@ -139,3 +139,17 @@ void Poblacion::Reparacion(){
 		}
 	}
 }
+
+void Poblacion::mutacionFuerte(){
+	double inicio = rand() % num_datos;
+	double fin = fmod(inicio + num_datos*0.1, num_datos);
+
+	while((fin - inicio) < 10){
+		inicio = rand() % num_datos;
+		fin = fmod(inicio + num_datos*0.1, num_datos);
+	}
+
+	for(int i=inicio; i<fin; i++){
+		datos[i] = rand() % num_clusters;
+	}
+}

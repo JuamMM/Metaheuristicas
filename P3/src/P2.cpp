@@ -194,6 +194,60 @@ pair<float,float> leerMaximoMinimo(){
 
 }
 
+Poblacion BLSobrePoblacion(int num_datos, int num_clusters, int min, int max, Poblacion pob){
+	int iteraciones = 0, evaluaciones = 0;
+	int error;
+
+	pob.asignacionAleatoria();
+
+	error = pob.calcularErrorGenerado(restricciones);
+	pob.actualizarCentroides(datos);
+	float valoracion = pob.desviacionGeneral(datos)+lambda*error;
+
+	bool continuar = true;
+
+	while(continuar && evaluaciones < 100000){
+		bool cont_evaluacion = true;
+
+		for(int dato = 0; dato<num_datos && cont_evaluacion; dato++){
+			int clust_orig = pob.devuelveCluster(dato);
+
+			for(int clust_nuevo=0; clust_nuevo<num_clusters && cont_evaluacion; clust_nuevo++){
+				int rest_nueva = error;
+
+				pob.asignaDato(dato,-1);
+
+				rest_nueva -= pob.calcularErrorParcial(dato,clust_orig,restricciones);
+				rest_nueva += pob.calcularErrorParcial(dato,clust_nuevo,restricciones);
+
+				pob.asignaDato(dato,clust_nuevo);
+
+				pob.actualizarCentroides(datos);
+
+				float valoracion_nueva = pob.desviacionGeneral(datos)+lambda*rest_nueva;
+
+				if(valoracion > valoracion_nueva){
+					valoracion = valoracion_nueva;
+					error = pob.calcularErrorGenerado(restricciones);
+					cont_evaluacion = false;
+				}
+				else{
+					pob.asignaDato(dato,clust_orig);
+					pob.actualizarCentroides(datos);
+				}
+				evaluaciones++;
+
+			}
+		}
+
+		if(cont_evaluacion){
+			continuar=false;
+		}
+		iteraciones++;
+	}
+	return pob;
+}
+
 Poblacion BL(int num_datos, int num_clusters, int min, int max){
 	Poblacion pob(num_datos, datos_centro, num_clusters, min, max);
 	int iteraciones = 0, evaluaciones = 0;
@@ -214,10 +268,14 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 			int clust_orig = pob.devuelveCluster(dato);
 
 			for(int clust_nuevo=0; clust_nuevo<num_clusters && cont_evaluacion; clust_nuevo++){
-				int rest_nueva;
+				int rest_nueva = error;
+
+				pob.asignaDato(dato,-1);
+
+				rest_nueva -= pob.calcularErrorParcial(dato,clust_orig,restricciones);
+				rest_nueva += pob.calcularErrorParcial(dato,clust_nuevo,restricciones);
 
 				pob.asignaDato(dato,clust_nuevo);
-				rest_nueva = pob.calcularErrorGenerado(restricciones);
 
 				pob.actualizarCentroides(datos);
 
@@ -225,7 +283,7 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 
 				if(valoracion > valoracion_nueva){
 					valoracion = valoracion_nueva;
-					error = rest_nueva;
+					error = pob.calcularErrorGenerado(restricciones);
 					cont_evaluacion = false;
 				}
 				else{
@@ -626,6 +684,7 @@ Poblacion ES(int num_datos, int num_clusters, int min, int max){
 	Poblacion pob(num_datos, datos_centro, num_clusters, min, max);
 
 	pob.asignacionAleatoria();
+	pob.actualizarCentroides(datos);
 	calcularTemperaturaIni(pob);
 	beta = (temp_ini - temp_fin)/(enfriamientos*temp_ini*temp_fin);
 	int sol_aceptadas=1;
@@ -634,18 +693,25 @@ Poblacion ES(int num_datos, int num_clusters, int min, int max){
 	while(temperatura >= temp_fin && sol_aceptadas>0){
 		sol_aceptadas=0;
 		cout<<"Temperatura: "<<temperatura<<endl;
-		double valoracion_ini = pob.desviacionGeneral(datos)+lambda*pob.calcularErrorGenerado(restricciones);
+		int errores = pob.calcularErrorGenerado(restricciones);
+		double valoracion_ini = pob.desviacionGeneral(datos)+lambda*errores;
 
 		for(int vecino=0; vecino<max_vecinos && sol_aceptadas<max_exitos;vecino++){
-			double valoracion_nueva = valoracion_ini;
+			int error_nuevo = errores;
+			double valoracion_nueva;
 			int dato = rand() % num_datos;
 			int cluster_orig = pob.devuelveCluster(dato);
 			int cluster_nuevo = rand() % num_clusters;
 
 			pob.asignaDato(dato,-1);
 
-			valoracion_nueva -= pob.calcularErrorParcial(dato,cluster_orig,restricciones);
-			valoracion_nueva += pob.calcularErrorParcial(dato,cluster_nuevo,restricciones);
+			error_nuevo -= pob.calcularErrorParcial(dato,cluster_orig,restricciones);
+			error_nuevo += pob.calcularErrorParcial(dato,cluster_nuevo,restricciones);
+
+			pob.asignaDato(dato,cluster_nuevo);
+			pob.actualizarCentroides(datos);
+
+			valoracion_nueva = pob.desviacionGeneral(datos)+lambda*error_nuevo;
 
 			double val = valoracion_nueva - valoracion_ini;
 
@@ -655,11 +721,11 @@ Poblacion ES(int num_datos, int num_clusters, int min, int max){
 
 			if(val < 0 || U <= -1*exp(val*temperatura)){
 				valoracion_ini = pob.desviacionGeneral(datos)+lambda*pob.calcularErrorGenerado(restricciones);
-				pob.asignaDato(dato,cluster_nuevo);
 				sol_aceptadas++;
 			}
 			else{
 				pob.asignaDato(dato,cluster_orig);
+				pob.actualizarCentroides(datos);
 			}
 		}
 		cout<<"Soluciones aceptadas: "<<sol_aceptadas<<endl;
@@ -674,6 +740,48 @@ Poblacion ES(int num_datos, int num_clusters, int min, int max){
 
 	return pob;
 }
+
+Poblacion ILS(int num_datos, int num_clusters, int min, int max){
+	Poblacion pob_mejor(num_datos, datos_centro, num_clusters, min, max);
+	double val_mejor, val_nueva;
+	int evaluaciones=0;
+
+	while(evaluaciones < 10000){
+		pob_mejor = BLSobrePoblacion(num_datos, num_clusters, min, max, pob_mejor);
+		pob_mejor.actualizarCentroides(datos);
+		evaluaciones++;
+
+		val_mejor = pob_mejor.desviacionGeneral(datos)+lambda*pob_mejor.calcularErrorGenerado(restricciones);
+		for(int i=0; i<9; i++){
+			evaluaciones++;
+			Poblacion pob_nueva(num_datos, datos_centro, num_clusters, min, max);
+
+			pob_nueva = pob_mejor;
+
+			pob_nueva.mutacionFuerte();
+
+			pob_nueva = BLSobrePoblacion(num_datos,num_clusters,min,max, pob_nueva);
+			pob_nueva.actualizarCentroides(datos);
+
+			val_nueva = pob_nueva.desviacionGeneral(datos)+lambda*pob_nueva.calcularErrorGenerado(restricciones);
+
+			if(val_mejor >= val_nueva){
+				pob_mejor = pob_nueva;
+			}
+		}
+		cout<<"Evaluaciones: "<<evaluaciones<<endl;
+	}
+
+	cout<<"Mejor solucion ILS"<<endl;
+	int error = pob_mejor.calcularErrorGenerado(restricciones);
+	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<pob_mejor.desviacionGeneral(datos)<<endl;
+	cout<<"Valoracion: "<<pob_mejor.desviacionGeneral(datos)+lambda*error<<endl;
+	pob_mejor.imprimePoblacion();
+
+	return pob_mejor;
+}
+
 int main(int argc, char **argv){
 	if(argc < 6){
 		cout<<"La forma de uso de este programa es: ./P2 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
@@ -697,6 +805,14 @@ int main(int argc, char **argv){
 
 		datos_centro = datos[0].size();
 		calculaLambda();
+
+		start_timers();
+		ILS(numero_datos,clusters,minimo,maximo);
+		cout<<"Tiempo ILS: "<<elapsed_time()<<endl;
+
+		start_timers();
+		BL(numero_datos,clusters,minimo,maximo);
+		cout<<"Tiempo BL: "<<elapsed_time()<<endl;
 
 		start_timers();
 		ES(numero_datos,clusters,minimo,maximo);
