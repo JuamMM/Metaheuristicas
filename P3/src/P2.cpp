@@ -746,30 +746,27 @@ Poblacion ILS(int num_datos, int num_clusters, int min, int max){
 	double val_mejor, val_nueva;
 	int evaluaciones=0;
 
-	while(evaluaciones < 10000){
-		pob_mejor = BLSobrePoblacion(num_datos, num_clusters, min, max, pob_mejor);
-		pob_mejor.actualizarCentroides(datos);
+	pob_mejor = BLSobrePoblacion(num_datos, num_clusters, min, max, pob_mejor);
+	pob_mejor.actualizarCentroides(datos);
+	evaluaciones++;
+
+	val_mejor = pob_mejor.desviacionGeneral(datos)+lambda*pob_mejor.calcularErrorGenerado(restricciones);
+	for(int i=0; i<9; i++){
 		evaluaciones++;
+		Poblacion pob_nueva(num_datos, datos_centro, num_clusters, min, max);
 
-		val_mejor = pob_mejor.desviacionGeneral(datos)+lambda*pob_mejor.calcularErrorGenerado(restricciones);
-		for(int i=0; i<9; i++){
-			evaluaciones++;
-			Poblacion pob_nueva(num_datos, datos_centro, num_clusters, min, max);
+		pob_nueva = pob_mejor;
 
-			pob_nueva = pob_mejor;
+		pob_nueva.mutacionFuerte();
 
-			pob_nueva.mutacionFuerte();
+		pob_nueva = BLSobrePoblacion(num_datos,num_clusters,min,max, pob_nueva);
+		pob_nueva.actualizarCentroides(datos);
 
-			pob_nueva = BLSobrePoblacion(num_datos,num_clusters,min,max, pob_nueva);
-			pob_nueva.actualizarCentroides(datos);
+		val_nueva = pob_nueva.desviacionGeneral(datos)+lambda*pob_nueva.calcularErrorGenerado(restricciones);
 
-			val_nueva = pob_nueva.desviacionGeneral(datos)+lambda*pob_nueva.calcularErrorGenerado(restricciones);
-
-			if(val_mejor >= val_nueva){
-				pob_mejor = pob_nueva;
-			}
+		if(val_mejor >= val_nueva){
+			pob_mejor = pob_nueva;
 		}
-		cout<<"Evaluaciones: "<<evaluaciones<<endl;
 	}
 
 	cout<<"Mejor solucion ILS"<<endl;
