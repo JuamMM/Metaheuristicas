@@ -68,7 +68,7 @@ void leerRestricciones(string fichero_restricciones){
 		istringstream reader(cadena);
 
 		while(!getline(reader,dato,',').eof() ){
-			if(stod(dato) != 0 && val1 < val2){
+			if(stod(dato) != 0){
 				tuple<int,int,double> tupla = make_tuple(val1,val2,stod(dato));
 				restricciones.push_back(tupla);
 			}
@@ -197,8 +197,6 @@ Poblacion BLSobrePoblacion(int num_datos, int num_clusters, int min, int max, Po
 	int iteraciones = 0, evaluaciones = 0;
 	int error;
 
-	pob.asignacionAleatoria();
-
 	error = pob.calcularErrorGenerado(restricciones);
 	pob.actualizarCentroides(datos);
 	float valoracion = pob.desviacionGeneral(datos)+lambda*error;
@@ -315,6 +313,7 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 		}
 		iteraciones++;
 	}
+
 	int error_max = pob.calcularErrorGenerado(restricciones);
 	cout<<"Desviacion General: "<<pob.desviacionGeneral(datos)<<endl;
 	cout<<"Error: "<<error_max<<endl;
@@ -761,6 +760,7 @@ Poblacion ILS(int num_datos, int num_clusters, int min, int max){
 	double val_mejor, val_nueva;
 	int evaluaciones=0;
 
+	pob_mejor.asignacionAleatoria();
 	pob_mejor = BLSobrePoblacion(num_datos, num_clusters, min, max, pob_mejor);
 	pob_mejor.actualizarCentroides(datos);
 	evaluaciones++;
@@ -820,23 +820,29 @@ int main(int argc, char **argv){
 		datos_centro = datos[0].size();
 		calculaLambda();
 
-/*
+
 		start_timers();
 		Greedy(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo greedy: "<<elapsed_time()<<endl;
 
+		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
+
 		start_timers();
 		ILS(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo ILS: "<<elapsed_time()<<endl;
-*/
+
+		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
+
 		start_timers();
 		BL(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo BL: "<<elapsed_time()<<endl;
 
 		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
-/*
+
 		start_timers();
 		ES(numero_datos,clusters,minimo,maximo);
-		cout<<"Tiempo: "<<elapsed_time()<<endl;*/
+		cout<<"Tiempo: "<<elapsed_time()<<endl;
+
+		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
 	}
 }

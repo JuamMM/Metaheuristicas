@@ -98,18 +98,16 @@ float Poblacion::desviacionGeneral(vector<vector<float>> datos){
 int Poblacion::calcularErrorGenerado(list<tuple<int,int,double>> restricciones){
 	int errores = 0;
 	for(auto it_res = restricciones.begin(); it_res != restricciones.end(); it_res++){
-		if( get<0>(*it_res) > get<1>(*it_res)){
-			int cluster2 = datos[get<1>(*it_res)];
-			int cluster1 = datos[get<0>(*it_res)];
-			if(cluster1 == -1 || cluster2 == -1){
+		int cluster2 = datos[get<1>(*it_res)];
+		int cluster1 = datos[get<0>(*it_res)];
+		if(cluster1 == -1 || cluster2 == -1){
 
-			}
-			else if(cluster1 == cluster2 && get<2>(*it_res) == -1){
-				errores++;
-			}
-			else if(cluster2 != cluster1 && get<2>(*it_res) == 1){
-				errores++;
-			}
+		}
+		else if(cluster1 == cluster2 && get<2>(*it_res) == -1){
+			errores++;
+		}
+		else if(cluster2 != cluster1 && get<2>(*it_res) == 1){
+			errores++;
 		}
 
 	}
