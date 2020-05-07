@@ -64,12 +64,11 @@ void leerRestricciones(string fichero_restricciones){
 
 	fichero.open(fichero_restricciones);
 
-	while(!getline(fichero,cadena,'\n').eof()){
+	while(!getline(fichero,cadena,'\n').eof() && val1 < datos.size()){
 		istringstream reader(cadena);
 
-
-		while(!getline(reader,dato,',').eof()){
-			if(stod(dato) != 0){
+		while(!getline(reader,dato,',').eof() ){
+			if(stod(dato) != 0 && val1 < val2){
 				tuple<int,int,double> tupla = make_tuple(val1,val2,stod(dato));
 				restricciones.push_back(tupla);
 			}
@@ -204,12 +203,20 @@ Poblacion BLSobrePoblacion(int num_datos, int num_clusters, int min, int max, Po
 	pob.actualizarCentroides(datos);
 	float valoracion = pob.desviacionGeneral(datos)+lambda*error;
 
+	vector<int> indices;
+	for(int i=0; i<num_datos; i++){
+		indices.push_back(i);
+	}
+
 	bool continuar = true;
 
 	while(continuar && evaluaciones < 100000){
 		bool cont_evaluacion = true;
 
-		for(int dato = 0; dato<num_datos && cont_evaluacion; dato++){
+		random_shuffle(indices.begin(), indices.end());
+
+		for(auto it = indices.begin(); it != indices.end() && cont_evaluacion; it++){
+			int dato = (*it);
 			int clust_orig = pob.devuelveCluster(dato);
 
 			for(int clust_nuevo=0; clust_nuevo<num_clusters && cont_evaluacion; clust_nuevo++){
@@ -259,12 +266,20 @@ Poblacion BL(int num_datos, int num_clusters, int min, int max){
 	pob.actualizarCentroides(datos);
 	float valoracion = pob.desviacionGeneral(datos)+lambda*error;
 
+	vector<int> indices;
+	for(int i=0; i<num_datos; i++){
+		indices.push_back(i);
+	}
+
 	bool continuar = true;
 
 	while(continuar && evaluaciones < 100000){
 		bool cont_evaluacion = true;
 
-		for(int dato = 0; dato<num_datos && cont_evaluacion; dato++){
+		random_shuffle(indices.begin(), indices.end());
+
+		for(auto it = indices.begin(); it != indices.end() && cont_evaluacion; it++){
+			int dato = (*it);
 			int clust_orig = pob.devuelveCluster(dato);
 
 			for(int clust_nuevo=0; clust_nuevo<num_clusters && cont_evaluacion; clust_nuevo++){
@@ -796,6 +811,8 @@ int main(int argc, char **argv){
 		int maximo = leerMaximoMinimo().second;
 		int numero_datos = datos.size();
 
+		cout<<"numero_datos: "<<numero_datos<<endl;
+
 		max_vecinos = 10*numero_datos;
 		max_exitos = 0.1*max_vecinos;
 		enfriamientos = pow(max_evaluaciones/max_vecinos,2);
@@ -803,16 +820,23 @@ int main(int argc, char **argv){
 		datos_centro = datos[0].size();
 		calculaLambda();
 
+/*
+		start_timers();
+		Greedy(numero_datos,clusters,minimo,maximo);
+		cout<<"Tiempo greedy: "<<elapsed_time()<<endl;
+
 		start_timers();
 		ILS(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo ILS: "<<elapsed_time()<<endl;
-
+*/
 		start_timers();
 		BL(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo BL: "<<elapsed_time()<<endl;
 
+		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
+/*
 		start_timers();
 		ES(numero_datos,clusters,minimo,maximo);
-		cout<<"Tiempo: "<<elapsed_time()<<endl;
+		cout<<"Tiempo: "<<elapsed_time()<<endl;*/
 	}
 }
