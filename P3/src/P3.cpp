@@ -734,7 +734,8 @@ Poblacion ES(int num_datos, int num_clusters, int min, int max){
 			float U = rand() % 2;
 
 			if(val < 0 || U <= -1*exp(val*temperatura)){
-				valoracion_ini = pob.desviacionGeneral(datos)+lambda*pob.calcularErrorGenerado(restricciones);
+				valoracion_ini = valoracion_nueva;
+				cout<<"Val_ini: "<<valoracion_ini<<endl;
 				sol_aceptadas++;
 			}
 			else{
