@@ -100,7 +100,7 @@ int Poblacion::calcularErrorGenerado(list<tuple<int,int,double>> restricciones){
 	for(auto it_res = restricciones.begin(); it_res != restricciones.end(); it_res++){
 		int cluster2 = datos[get<1>(*it_res)];
 		int cluster1 = datos[get<0>(*it_res)];
-		if(cluster1 == -1 || cluster2 == -1){
+		if(cluster1 == -1 || cluster2 == -1 ){
 
 		}
 		else if(cluster1 == cluster2 && get<2>(*it_res) == -1){
@@ -117,8 +117,19 @@ int Poblacion::calcularErrorGenerado(list<tuple<int,int,double>> restricciones){
 int Poblacion::calcularErrorParcial(int dato, int cluster1, list<tuple<int,int,double>> restricciones){
 	int errores = 0;
 	for(auto it_res = restricciones.begin(); it_res != restricciones.end(); it_res++){
-		int cluster2 = devuelveCluster(get<1>(*it_res));
-		if(dato == get<0>(*it_res)){
+		if(dato == get<0>(*it_res) ){
+			int cluster2 = devuelveCluster(get<1>(*it_res));
+			if(cluster2 != -1){
+				if(cluster1 == cluster2 && (get<2>(*it_res)) == -1){
+					errores++;
+				}
+				else if(cluster1 != cluster2 && (get<2>(*it_res)) == 1){
+					errores++;
+				}
+			}
+		}
+		else if(dato == get<1>(*it_res)){
+			int cluster2 = devuelveCluster(get<0>(*it_res));
 			if(cluster2 != -1){
 				if(cluster1 == cluster2 && (get<2>(*it_res)) == -1){
 					errores++;

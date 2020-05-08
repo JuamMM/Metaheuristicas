@@ -67,8 +67,8 @@ void leerRestricciones(string fichero_restricciones){
 	while(!getline(fichero,cadena,'\n').eof() && val1 < datos.size()){
 		istringstream reader(cadena);
 
-		while(!getline(reader,dato,',').eof() ){
-			if(stod(dato) != 0){
+		while(!getline(reader,dato,',').eof() && val2 < datos.size()){
+			if(stod(dato) != 0 && val2 > val1){
 				tuple<int,int,double> tupla = make_tuple(val1,val2,stod(dato));
 				restricciones.push_back(tupla);
 			}
@@ -821,13 +821,6 @@ int main(int argc, char **argv){
 		datos_centro = datos[0].size();
 		calculaLambda();
 
-
-		start_timers();
-		Greedy(numero_datos,clusters,minimo,maximo);
-		cout<<"Tiempo greedy: "<<elapsed_time()<<endl;
-
-		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
-
 		start_timers();
 		ILS(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo ILS: "<<elapsed_time()<<endl;
@@ -839,11 +832,11 @@ int main(int argc, char **argv){
 		cout<<"Tiempo BL: "<<elapsed_time()<<endl;
 
 		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
-
+/*
 		start_timers();
 		ES(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo: "<<elapsed_time()<<endl;
-
+*/
 		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
 	}
 }
