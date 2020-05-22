@@ -925,9 +925,38 @@ Poblacion ILS_ES(int num_datos, int num_clusters, int min, int max){
 
 	return pob_mejor;
 }
+
+Poblacion BMB(int num_datos, int num_clusters, int min, int max, int numero_poblaciones){
+	Poblacion pob_mejor(num_datos, datos_centro, num_clusters, min, max);
+	Poblacion pob(num_datos, datos_centro, num_clusters, min, max);
+	double val_mejor = 10000, val_nueva;
+
+	for(int i=0;i<numero_poblaciones;i++){
+		pob.asignacionAleatoria();
+		pob = BLSobrePoblacion(num_datos, num_clusters, min, max, pob);
+		pob.actualizarCentroides(datos);
+
+		val_nueva = pob.desviacionGeneral(datos)+lambda*pob.calcularErrorGenerado(restricciones);
+
+		if(val_mejor > val_nueva){
+			pob_mejor = pob;
+			val_mejor = val_nueva;
+		}
+	}
+
+	cout<<"Mejor solucion BMB"<<endl;
+	int error = pob_mejor.calcularErrorGenerado(restricciones);
+	cout<<"Error: "<<error<<endl;
+	cout<<"Desviacion General: "<<pob_mejor.desviacionGeneral(datos)<<endl;
+	cout<<"Valoracion: "<<pob_mejor.desviacionGeneral(datos)+lambda*error<<endl;
+	pob_mejor.imprimePoblacion();
+
+	return pob_mejor;
+}
+
 int main(int argc, char **argv){
 	if(argc < 6){
-		cout<<"La forma de uso de este programa es: ./P2 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
+		cout<<"La forma de uso de este programa es: ./P3 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
 	}
 	else{
 		int clusters = stoi(argv[1]);
@@ -952,10 +981,17 @@ int main(int argc, char **argv){
 		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
 
 		start_timers();
+		BMB(numero_datos,clusters,minimo,maximo,10);
+		cout<<"Tiempo: "<<elapsed_time()<<endl;
+
+		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
+
+		start_timers();
 		ILS_ES(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo: "<<elapsed_time()<<endl;
 
 		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
+
 		start_timers();
 		ILS(numero_datos,clusters,minimo,maximo);
 		cout<<"Tiempo ILS: "<<elapsed_time()<<endl;
@@ -968,4 +1004,6 @@ int main(int argc, char **argv){
 
 		cout<<"<--------------------------------------------------------------------------------------------->"<<endl;
 	}
+
+
 }
