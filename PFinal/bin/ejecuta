@@ -8,25 +8,24 @@ do
 	./PFINAL 3 300 ConjuntosNuevosPAR/iris_set.dat ConjuntosNuevosPAR/iris_set_const_10.const $sem
 
 	echo "Ejecutando ecoli con 10 restricciones y semilla $sem"
-	./PFINAL 8 150 ConjuntosNuevosPAR/ecoli_set.dat ConjuntosNuevosPAR/ecoli_set_const_10.const $sem
+	./PFINAL 8 300 ConjuntosNuevosPAR/ecoli_set.dat ConjuntosNuevosPAR/ecoli_set_const_10.const $sem
 
 	echo "Ejecutando rand con 10 restricciones y semilla $sem"
-	./PFINAL 3 150 ConjuntosNuevosPAR/rand_set.dat ConjuntosNuevosPAR/rand_set_const_10.const $sem
+	./PFINAL 3 300 ConjuntosNuevosPAR/rand_set.dat ConjuntosNuevosPAR/rand_set_const_10.const $sem
 
 	echo "Ejecutando newthyroid con 10 restricciones y semilla $sem"
-	./PFINAL 3 150 ConjuntosNuevosPAR/newthyroid_set.dat ConjuntosNuevosPAR/newthyroid_set_const_10.const $sem
+	./PFINAL 3 300 ConjuntosNuevosPAR/newthyroid_set.dat ConjuntosNuevosPAR/newthyroid_set_const_10.const $sem
 
 	echo "Ejecutando iris con 20 restricciones y semilla $sem"
-	./PFINAL 3 150 ConjuntosNuevosPAR/iris_set.dat ConjuntosNuevosPAR/iris_set_const_20.const $sem
+	./PFINAL 3 300 ConjuntosNuevosPAR/iris_set.dat ConjuntosNuevosPAR/iris_set_const_20.const $sem
 
 	echo "Ejecutando ecoli con 20 restricciones y semilla $sem"
-	./PFINAL 8 150 ConjuntosNuevosPAR/ecoli_set.dat ConjuntosNuevosPAR/ecoli_set_const_20.const $sem
+	./PFINAL 8 300 ConjuntosNuevosPAR/ecoli_set.dat ConjuntosNuevosPAR/ecoli_set_const_20.const $sem
 
 	echo "Ejecutando rand con 20 restricciones y semilla $sem"
-	./PFINAL 3 150 ConjuntosNuevosPAR/rand_set.dat ConjuntosNuevosPAR/rand_set_const_20.const $sem
+	./PFINAL 3 300 ConjuntosNuevosPAR/rand_set.dat ConjuntosNuevosPAR/rand_set_const_20.const $sem
 
 	echo "Ejecutando newthryroid con 20 restricciones y semilla $sem"
-	./PFINAL 3 150 ConjuntosNuevosPAR/newthyroid_set.dat ConjuntosNuevosPAR/newthyroid_set_const_20.const $sem
-
+	./PFINAL 3 300 ConjuntosNuevosPAR/newthyroid_set.dat ConjuntosNuevosPAR/newthyroid_set_const_20.const $sem
 
 done
