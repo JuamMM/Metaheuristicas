@@ -955,15 +955,14 @@ Poblacion BMB(int num_datos, int num_clusters, int min, int max, int numero_pobl
 }
 
 int main(int argc, char **argv){
-	if(argc < 6){
-		cout<<"La forma de uso de este programa es: ./P3 <numero de clusters> <numero de poblaciones> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
+	if(argc < 5){
+		cout<<"La forma de uso de este programa es: ./P3 <numero de clusters> <path a los datos> <path a las resctricciones> <semilla>"<<endl;
 	}
 	else{
 		int clusters = stoi(argv[1]);
-		int poblaciones = stoi(argv[2]);
-		leerDatos(argv[3]);
-		leerRestricciones(argv[4]);
-		unsigned semilla = stoul(argv[5]);
+		leerDatos(argv[2]);
+		leerRestricciones(argv[3]);
+		unsigned semilla = stoul(argv[4]);
 
 		srand(semilla);
 
