@@ -2,6 +2,8 @@
 
 semillas=(1345378882 572718921 34737829 28388992 9987479)
 
+make -B
+
 for sem in ${semillas[*]}
 do
 	echo "Ejecutando iris con 10 restricciones y semilla $sem"

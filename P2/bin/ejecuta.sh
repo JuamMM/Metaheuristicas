@@ -2,7 +2,7 @@
 
 semillas=(1345378882 572718921 34737829 28388992 9987479)
 
-make -B
+make
 
 for sem in ${semillas}
 do
