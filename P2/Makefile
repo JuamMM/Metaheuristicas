@@ -4,14 +4,15 @@ INCLUDE = $(HOME)/include
 SRC     = $(HOME)/src
 OBJ     = $(HOME)/obj
 LIB     = $(HOME)/lib
+exe	  = $(BIN)/P2_exe
 
 FLAGS = --std=c++11 -O3
 
-all: $(BIN)/P2
+all: $(exe)
 
 
-$(BIN)/P2: $(OBJ)/PAR.o $(OBJ)/P2.o $(OBJ)/Poblacion.o $(OBJ)/timer.o
-	g++ $(FLAGS) $(OBJ)/P2.o $(OBJ)/PAR.o $(OBJ)/Poblacion.o $(OBJ)/timer.o -o $(BIN)/P2
+$(exe): $(OBJ)/PAR.o $(OBJ)/P2.o $(OBJ)/Poblacion.o $(OBJ)/timer.o
+	g++ $(FLAGS) $(OBJ)/P2.o $(OBJ)/PAR.o $(OBJ)/Poblacion.o $(OBJ)/timer.o -o $(exe)
 
 $(OBJ)/P2.o: $(SRC)/P2.cpp $(INCLUDE)/PAR.h
 	g++ -c $(FLAGS) $(SRC)/P2.cpp -I$(INCLUDE) -o $(OBJ)/P2.o
@@ -28,4 +29,4 @@ $(OBJ)/timer.o: $(SRC)/timer.c $(INCLUDE)/timer.h
 
 clean:
 	-rm $(OBJ)/*.o
-	-rm $(BIN)/*
+	-rm $(BIN)/*_exe

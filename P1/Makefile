@@ -7,17 +7,17 @@ LIB     = $(HOME)/lib
 
 FLAGS = --std=c++11 -O2
 
-all: $(BIN)/greedy $(BIN)/bl $(BIN)/prueba
+all: $(BIN)/greedy_exe $(BIN)/bl_exe $(BIN)/prueba_exe
 
 
-$(BIN)/prueba: $(OBJ)/ARP.o $(OBJ)/prueba.o $(OBJ)/Cluster.o $(OBJ)/timer.o
-	g++ $(FLAGS) $(OBJ)/prueba.o $(OBJ)/ARP.o $(OBJ)/Cluster.o $(OBJ)/timer.o -o $(BIN)/prueba
+$(BIN)/prueba_exe: $(OBJ)/ARP.o $(OBJ)/prueba.o $(OBJ)/Cluster.o $(OBJ)/timer.o
+	g++ $(FLAGS) $(OBJ)/prueba.o $(OBJ)/ARP.o $(OBJ)/Cluster.o $(OBJ)/timer.o -o $(BIN)/prueba_exe
 
-$(BIN)/bl: $(OBJ)/ARP.o $(OBJ)/practica2.o $(OBJ)/Cluster.o $(OBJ)/timer.o
-	g++ $(FLAGS) $(OBJ)/practica2.o $(OBJ)/ARP.o $(OBJ)/Cluster.o $(OBJ)/timer.o -o $(BIN)/bl
+$(BIN)/bl_exe: $(OBJ)/ARP.o $(OBJ)/practica2.o $(OBJ)/Cluster.o $(OBJ)/timer.o
+	g++ $(FLAGS) $(OBJ)/practica2.o $(OBJ)/ARP.o $(OBJ)/Cluster.o $(OBJ)/timer.o -o $(BIN)/bl_exe
 
-$(BIN)/greedy: $(OBJ)/ARP.o $(OBJ)/practica1.o $(OBJ)/Cluster.o $(OBJ)/timer.o
-	g++ $(FLAGS) $(OBJ)/practica1.o $(OBJ)/ARP.o $(OBJ)/Cluster.o $(OBJ)/timer.o -o $(BIN)/greedy
+$(BIN)/greedy_exe: $(OBJ)/ARP.o $(OBJ)/practica1.o $(OBJ)/Cluster.o $(OBJ)/timer.o
+	g++ $(FLAGS) $(OBJ)/practica1.o $(OBJ)/ARP.o $(OBJ)/Cluster.o $(OBJ)/timer.o -o $(BIN)/greedy_exe
 
 $(OBJ)/prueba.o: $(SRC)/prueba.cpp $(INCLUDE)/ARP.h
 	g++ -c $(FLAGS) $(SRC)/prueba.cpp -I$(INCLUDE) -o $(OBJ)/prueba.o
@@ -40,4 +40,4 @@ $(OBJ)/timer.o: $(SRC)/timer.c $(INCLUDE)/timer.h
 
 clean:
 	-rm $(OBJ)/*.o
-	-rm $(BIN)/*
+	-rm $(BIN)/*_exe
