@@ -7,27 +7,27 @@ make
 for sem in ${semillas}
 do
 	echo "Ejecutando iris con 10 restricciones y semilla $sem"
-	./bin/P2 3 50 ./bin/ConjuntosNuevosPAR/iris_set.dat ./bin/ConjuntosNuevosPAR/iris_set_const_10.const $sem
+	./bin/P2_exe 3 50 ./bin/ConjuntosNuevosPAR/iris_set.dat ./bin/ConjuntosNuevosPAR/iris_set_const_10.const $sem
 
-#	echo "Ejecutando ecoli con 10 restricciones y semilla $sem"
-#	./bin/P2 8 50 ./bin/ConjuntosNuevosPAR/ecoli_set.dat ./bin/ConjuntosNuevosPAR/ecoli_set_const_10.const $sem
+	echo "Ejecutando ecoli con 10 restricciones y semilla $sem"
+	./bin/P2_exe 8 50 ./bin/ConjuntosNuevosPAR/ecoli_set.dat ./bin/ConjuntosNuevosPAR/ecoli_set_const_10.const $sem
 
-#	echo "Ejecutando rand con 10 restricciones y semilla $sem"
-#	./bin/P2 3 50 ./bin/ConjuntosNuevosPAR/rand_set.dat ./bin/ConjuntosNuevosPAR/rand_set_const_10.const $sem
+	echo "Ejecutando rand con 10 restricciones y semilla $sem"
+	./bin/P2_exe 3 50 ./bin/ConjuntosNuevosPAR/rand_set.dat ./bin/ConjuntosNuevosPAR/rand_set_const_10.const $sem
 
-#	echo "Ejecutando newthyroid con 10 restricciones y semilla $sem"
-#	./bin/P2 3 50 ./bin/ConjuntosNuevosPAR/newthyroid_set.dat ./bin/ConjuntosNuevosPAR/newthyroid_set_const_10.const $sem
+	echo "Ejecutando newthyroid con 10 restricciones y semilla $sem"
+	./bin/P2_exe 3 50 ./bin/ConjuntosNuevosPAR/newthyroid_set.dat ./bin/ConjuntosNuevosPAR/newthyroid_set_const_10.const $sem
 
 	echo "Ejecutando iris con 20 restricciones y semilla $sem"
-	./bin/P2 3 50 ./bin/ConjuntosNuevosPAR/iris_set.dat ./bin/ConjuntosNuevosPAR/iris_set_const_20.const $sem
+	./bin/P2_exe 3 50 ./bin/ConjuntosNuevosPAR/iris_set.dat ./bin/ConjuntosNuevosPAR/iris_set_const_20.const $sem
 
-#	echo "Ejecutando ecoli con 20 restricciones y semilla $sem"
-#	./bin/P2 8 50 ./bin/ConjuntosNuevosPAR/ecoli_set.dat ./bin/ConjuntosNuevosPAR/ecoli_set_const_20.const $sem
+	echo "Ejecutando ecoli con 20 restricciones y semilla $sem"
+	./bin/P2_exe 8 50 ./bin/ConjuntosNuevosPAR/ecoli_set.dat ./bin/ConjuntosNuevosPAR/ecoli_set_const_20.const $sem
 
-#	echo "Ejecutando rand con 20 restricciones y semilla $sem"
-#	./bin/P2 3 50 ./bin/ConjuntosNuevosPAR/rand_set.dat ./bin/ConjuntosNuevosPAR/rand_set_const_20.const $sem
+	echo "Ejecutando rand con 20 restricciones y semilla $sem"
+	./bin/P2_exe 3 50 ./bin/ConjuntosNuevosPAR/rand_set.dat ./bin/ConjuntosNuevosPAR/rand_set_const_20.const $sem
 
-#	echo "Ejecutando newthryroid con 20 restricciones y semilla $sem"
-#	./bin/P2 3 50 ./bin/ConjuntosNuevosPAR/newthyroid_set.dat ./bin/ConjuntosNuevosPAR/newthyroid_set_const_20.const $sem
+	echo "Ejecutando newthryroid con 20 restricciones y semilla $sem"
+	./bin/P2_exe 3 50 ./bin/ConjuntosNuevosPAR/newthyroid_set.dat ./bin/ConjuntosNuevosPAR/newthyroid_set_const_20.const $sem
 
 done
